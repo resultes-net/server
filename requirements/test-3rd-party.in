@@ -1,0 +1,7 @@
+-r run-3rd-party.in
+
+pytest
+pytest-coverage
+black
+mypy
+pylint
