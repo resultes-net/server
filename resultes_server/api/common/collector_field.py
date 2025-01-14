@@ -6,23 +6,19 @@ from .. import common as _common
 
 @_dc.dataclass
 class CollectorField:
-    area_m2: _common.ScaledValue["PerDemandValueType"]
+    area: _common.ScaledValue[
+        _tp.Literal["absolute_m2", "relative_to_demand_m2_per_GWh"]
+    ]
     inclination_deg: float
     orientation_east_west_deg: float
-    type: "CollectorScaling"
+    type: "CollectorType"
     performance_coefficients: "PerformanceCoefficients"
-    nominal_mass_kg_per_h: _common.ScaledValue["PerCollectorAreaScaling"]
+    nominal_massflow: _common.ScaledValue[
+        _tp.Literal["absolute_kg_per_h", "relative_to_collector_area_kg_per_h_m2"]
+    ]
 
 
-type PerDemandValueType = _tp.Literal[
-    "absolute_1", "relative_to_demand_per_GWh"
-]
-
-type CollectorScaling = _tp.Literal["flat-plate", "parallel-trough"]
-
-type PerCollectorAreaScaling = _tp.Literal[
-    "absolute_1", "relative_to_collector_area_per_m2"
-]
+type CollectorType = _tp.Literal["flat-plate", "parallel-trough"]
 
 
 @_dc.dataclass
