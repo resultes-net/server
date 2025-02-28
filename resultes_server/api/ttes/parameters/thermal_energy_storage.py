@@ -11,7 +11,7 @@ class TtesStorage:
     ] = _acom.field(discriminator="size_type")
     location: "TtesLocation"
     heat_conductance_kW_per_m2_per_K: float
-    inlet_relative_heights_1: "TtesRelativeHeights" = _acom.field(
+    ports_relative_heights_1: "TtesPortRelativeHeights" = _acom.field(
         "The heights are relative: 1 means at the very top, 0.5 in the middle, etc."
     )
 
@@ -39,9 +39,14 @@ class TtesSizeAbsolute:
 TtesLocation = _tp.Literal["above-ground-free-standing", "below-ground-buried"]
 
 
-class TtesRelativeHeights(_tp.TypedDict):
+@_dc.dataclass
+class TtesPortRelativeHeights:
     """The heights ar relative: 1 is at the very top, 0.5 in the middle, etc."""
 
     top: float
     middle: float
     bottom: float
+    
+    def __post_init__(self) -> None:
+        if not (self.top > self.middle > self.bottom):
+            raise ValueError("Port heights must decrease from top to bottom.")
