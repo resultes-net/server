@@ -1,25 +1,20 @@
-import dataclasses as _dc
 import typing as _tp
 
 import fastapi as _fapi
+import pydantic as _pc
 
-from .. import common as _acom
 
-
-@_dc.dataclass
-class Demand:
-    profile: _tp.Union["PreDefinedProfile", "UserProvidedProfile"] = (
-        _acom.field(discriminator="profile_type")
+class Demand(_pc.BaseModel):
+    profile: _tp.Union["PreDefinedProfile", "UserProvidedProfile"] = _pc.Field(
+        discriminator="profile_type"
     )
 
 
-@_dc.dataclass
-class PreDefinedProfile:
+class PreDefinedProfile(_pc.BaseModel):
     profile_type: _tp.Literal["predefined"]
     name: str
 
 
-@_dc.dataclass
-class UserProvidedProfile:
+class UserProvidedProfile(_pc.BaseModel):
     profile_type: _tp.Literal["user-provided"]
     data: _fapi.UploadFile
