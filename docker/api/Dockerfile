@@ -2,11 +2,14 @@ FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
-COPY requirements/*.linux.txt requirements/
+COPY requirements/*.txt requirements/
 
-COPY ../../resultes_server resultes_server
-COPY ../../pyproject.toml pyproject.toml
+COPY src/resultes_server src/resultes_server
+COPY pyproject.toml pyproject.toml
 
-RUN python -m pip install --no-cache-dir -r requirements/dev.linux.txt
+COPY alembic alembic
+COPY alembic.ini alembic.ini
 
-ENTRYPOINT ["python", "resultes_server/main.py"]
+RUN python -m pip install --no-cache-dir -r requirements/dev.txt
+
+ENTRYPOINT ["python", "src/resultes_server/main.py"]

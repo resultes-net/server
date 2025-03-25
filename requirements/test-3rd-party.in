@@ -1,7 +1,11 @@
 -r run-3rd-party.in
 
+-c constraints.txt
+
 pytest
 pytest-coverage
 black
 mypy
 pylint
+
+alembic

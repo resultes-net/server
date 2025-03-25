@@ -14,7 +14,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from resultes_server.db_model import model
+from src.resultes_server.db_model import model
 target_metadata = model.Base.metadata
 
 # other values from the config, defined by the needs of env.py,

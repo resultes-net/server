@@ -1,0 +1,2 @@
+typing-extensions==4.11.0
+markupsafe==3.0.2

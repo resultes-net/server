@@ -1,7 +1,8 @@
 -r test-3rd-party.in
 
+-c constraints.txt
+
 typer
 typing-extensions
 pip-compile-multi
-
-alembic
+uv

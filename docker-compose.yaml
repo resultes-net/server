@@ -1,6 +1,10 @@
 services:  
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    depends_on:
+      - postgres
     ports:
       - "8080:80"
     environment:
@@ -8,7 +12,7 @@ services:
   postgres:
     image: "postgres:17.4-bookworm"
     ports:
-        - "5432:5432"
+        - "7432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=resultes
