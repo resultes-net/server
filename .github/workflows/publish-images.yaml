@@ -8,7 +8,6 @@ on:
 jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
-    needs: build-and-push-base-docker-image
     strategy:
       matrix:
         include:
