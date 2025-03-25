@@ -4,39 +4,39 @@ on:
   push:
     branches:
       - '*'
-  
-  build-and-push-images:
-    runs-on: ubuntu-latest
-    needs: build-and-push-base-docker-image
-    strategy:
-      matrix:
-        include:
-          - dockerfile: ./docker/api/Dockerfile
-            name: resultes-server-api
-          - dockerfile: ./docker/postgres/Dockerfile
-            name: resultes-server-postgres
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+build-and-push-images:
+  runs-on: ubuntu-latest
+  needs: build-and-push-base-docker-image
+  strategy:
+    matrix:
+      include:
+        - dockerfile: ./docker/api/Dockerfile
+          name: resultes-server-api
+        - dockerfile: ./docker/postgres/Dockerfile
+          name: resultes-server-postgres
+  permissions:
+    contents: read
+    packages: write
+    attestations: write
+    id-token: write
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          docker build -f ${{ matrix.dockerfile }} -t ghcr.io/spf-ost/${{ matrix.name }}:latest .
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Docker image
-        id: push
-        run: |
-          $image_digest=$(py -3.12 resulted_docker_utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/${{ matrix.name }}:latest)
-          echo "image_digest=${image_digest}" >> $env:GITHUB_OUTPUT
+    - name: Build Docker image
+      run: |
+        docker build -f ${{ matrix.dockerfile }} -t ghcr.io/spf-ost/${{ matrix.name }}:latest .
+
+    - name: Push Docker image
+      id: push
+      run: |
+        $image_digest=$(py -3.12 resulted_docker_utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/${{ matrix.name }}:latest)
+        echo "image_digest=${image_digest}" >> $env:GITHUB_OUTPUT
