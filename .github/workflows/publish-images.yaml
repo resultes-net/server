@@ -8,13 +8,6 @@ on:
 jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - dockerfile: ./docker/api/Dockerfile
-            name: resultes-server-api
-          - dockerfile: ./docker/postgres/Dockerfile
-            name: resultes-server-postgres
     permissions:
       contents: read
       packages: write
@@ -33,10 +26,10 @@ jobs:
   
       - name: Build Docker image
         run: |
-          docker build -f ${{ matrix.dockerfile }} -t ghcr.io/spf-ost/${{ matrix.name }}:latest .
+          docker build -f docker/api/Dockerfile -t ghcr.io/spf-ost/resultes-server-api:latest .
   
       - name: Push Docker image
         id: push
         run: |
-          $image_digest=$(py -3.12 resulted_docker_utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/${{ matrix.name }}:latest)
+          $image_digest=$(py -3.12 resulted_docker_utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/resultes-server-api:latest)
           echo "image_digest=${image_digest}" >> $env:GITHUB_OUTPUT
