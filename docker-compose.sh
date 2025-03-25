@@ -6,6 +6,4 @@ docker-compose.exe up -d
 
 sleep 5
 
-docker exec -i resultes-server-api-1 bash <<EOF
-alembic upgrade head
-EOF
+docker exec resultes-server-api-1 alembic upgrade head
