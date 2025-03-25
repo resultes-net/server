@@ -42,5 +42,5 @@ jobs:
       - name: Push Docker image
         id: push
         run: |
-          $image_digest=$(python resultes-docker-utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/resultes-server-api:latest)
+          image_digest=$(python resultes-docker-utils/push_docker_image_and_get_digest.py ghcr.io/spf-ost/resultes-server-api:latest)
           echo "image_digest=${image_digest}" >> "$GITHUB_ENV"
