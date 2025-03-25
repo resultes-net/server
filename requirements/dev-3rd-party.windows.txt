@@ -5,7 +5,7 @@
 #
 #    pip-compile-multi
 #
--r test-3rd-party.txt
+-r test-3rd-party.windows.txt
 build==1.2.1
     # via pip-tools
 pip-compile-multi==2.6.3

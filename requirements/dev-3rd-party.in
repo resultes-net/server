@@ -3,3 +3,5 @@
 typer
 typing-extensions
 pip-compile-multi
+
+alembic

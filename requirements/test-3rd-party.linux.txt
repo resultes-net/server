@@ -5,11 +5,11 @@
 #
 #    pip-compile-multi
 #
--r run-3rd-party.txt
+-r run-3rd-party.linux.txt
 astroid==3.2.0
     # via pylint
 black==24.4.2
-    # via -r requirements\test-3rd-party.in
+    # via -r requirements/test-3rd-party.in
 coverage[toml]==7.5.1
     # via pytest-cov
 dill==0.3.8
@@ -21,7 +21,7 @@ isort==5.13.2
 mccabe==0.7.0
     # via pylint
 mypy==1.14.1
-    # via -r requirements\test-3rd-party.in
+    # via -r requirements/test-3rd-party.in
 mypy-extensions==1.0.0
     # via
     #   black
@@ -39,16 +39,16 @@ platformdirs==4.2.2
 pluggy==1.5.0
     # via pytest
 pylint==3.2.0
-    # via -r requirements\test-3rd-party.in
+    # via -r requirements/test-3rd-party.in
 pytest==8.2.0
     # via
-    #   -r requirements\test-3rd-party.in
+    #   -r requirements/test-3rd-party.in
     #   pytest-cov
 pytest-cov==5.0.0
     # via pytest-cover
 pytest-cover==3.0.0
     # via pytest-coverage
 pytest-coverage==0.0
-    # via -r requirements\test-3rd-party.in
+    # via -r requirements/test-3rd-party.in
 tomlkit==0.12.5
     # via pylint

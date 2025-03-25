@@ -1,0 +1,14 @@
+services:  
+  api:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+        - POSTGRES=postgres
+  postgres:
+    image: "postgres:17.4-bookworm"
+    ports:
+        - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=resultes
