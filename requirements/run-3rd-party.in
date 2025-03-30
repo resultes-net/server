@@ -3,5 +3,8 @@
 fastapi[standard]
 pandas
 
+pyjwt
+passlib
+
 sqlmodel
 psycopg[binary]

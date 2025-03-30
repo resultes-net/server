@@ -15,9 +15,8 @@ _DAYS_PER_MONTH = [
 
 assert len(_DAYS_PER_MONTH) == 12, "There are twelve months in a year."
 
-_HOURS_AT_END_OF_MONTH = [
-    sum(_DAYS_PER_MONTH[:m])*24 for m in range(1, 13)
-]
+_HOURS_AT_END_OF_MONTH = [sum(_DAYS_PER_MONTH[:m]) * 24 for m in range(1, 13)]
+
 
 def get_month(hour: int) -> int:
     for month, hours in enumerate(_HOURS_AT_END_OF_MONTH, start=1):

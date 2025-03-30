@@ -53,13 +53,11 @@ JSON = r"""
 """
 
 EXPECTED_PARAMETERS = TtesParameters(
-    demand=Demand(
-        profile=PreDefinedProfile(profile_type="predefined", name="default")
-    ),
+    demand=Demand(profile=PreDefinedProfile(profile_type="predefined", name="default")),
     collector_field=CollectorField(
-        area=ScaledValue[
-            Literal["absolute_m2", "relative_to_demand_m2_per_GWh"]
-        ](scaling="relative_to_demand_m2_per_GWh", value=4.0),
+        area=ScaledValue[Literal["absolute_m2", "relative_to_demand_m2_per_GWh"]](
+            scaling="relative_to_demand_m2_per_GWh", value=4.0
+        ),
         inclination_deg=45.0,
         orientation_east_west_deg=0.0,
         type="flat-plate",
@@ -67,9 +65,7 @@ EXPECTED_PARAMETERS = TtesParameters(
             a0=0.857, a1_kW_per_m2_per_K=0.00416, a2_kW_per_m2_per_K2=8.9e-06
         ),
         nominal_massflow=ScaledValue[
-            Literal[
-                "absolute_kg_per_h", "relative_to_collector_area_kg_per_h_m2"
-            ]
+            Literal["absolute_kg_per_h", "relative_to_collector_area_kg_per_h_m2"]
         ](scaling="relative_to_collector_area_kg_per_h_m2", value=15.0),
     ),
     storage=TtesStorage(

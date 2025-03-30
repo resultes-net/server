@@ -2,7 +2,7 @@ import typing as _tp
 
 import pydantic as _pc
 
-from .. import common as _common
+from resultes_server.models.simulations.parameters import common as _common
 
 
 class CollectorField(_pc.BaseModel):
@@ -14,9 +14,7 @@ class CollectorField(_pc.BaseModel):
     type: "CollectorType"
     performance_coefficients: "PerformanceCoefficients"
     nominal_massflow: _common.ScaledValue[
-        _tp.Literal[
-            "absolute_kg_per_h", "relative_to_collector_area_kg_per_h_m2"
-        ]
+        _tp.Literal["absolute_kg_per_h", "relative_to_collector_area_kg_per_h_m2"]
     ]
 
 
