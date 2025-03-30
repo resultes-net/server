@@ -9,6 +9,14 @@ services:
       - "8080:80"
     environment:
         - POSTGRES=postgres
+    develop:
+      watch:
+        - path: src
+          action: rebuild
+        - path: requirements
+          action: rebuild
+        - path: docker/api
+          action: rebuild
   postgres:
     image: "postgres:17.4-bookworm"
     ports:

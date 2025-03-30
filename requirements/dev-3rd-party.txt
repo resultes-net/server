@@ -7,30 +7,11 @@
 #
 -r test-3rd-party.txt
 build==1.2.1
-    # via pip-tools
-coverage[toml]==7.5.1
-    # via pytest-cov
+pip==25.0.1
 pip-compile-multi==2.8.0
-    # via -r requirements/dev-3rd-party.in
 pip-tools==7.4.1
-    # via pip-compile-multi
-psycopg[binary]==3.2.6
-    # via -r /mnt/c/Users/damian.birchler/src/resultes/wd1/resultes-server/requirements/run-3rd-party.in
 pyproject-hooks==1.1.0
-    # via
-    #   build
-    #   pip-tools
+setuptools==78.1.0
 toposort==1.10
-    # via pip-compile-multi
 uv==0.6.9
-    # via -r requirements/dev-3rd-party.in
-uvicorn[standard]==0.29.0
-    # via
-    #   fastapi
-    #   fastapi-cli
 wheel==0.43.0
-    # via pip-tools
-
-# The following packages are considered to be unsafe in a requirements file:
-# pip
-# setuptools

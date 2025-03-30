@@ -1,8 +1,7 @@
 -c constraints.txt
 
-fastapi
-python-multipart
+fastapi[standard]
 pandas
 
-SQLAlchemy
+sqlmodel
 psycopg[binary]

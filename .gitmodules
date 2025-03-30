@@ -1,3 +1,6 @@
 [submodule "resultes-docker-utils"]
 	path = resultes-docker-utils
 	url = git@github.com:SPF-OST/resultes-docker-utils.git
+[submodule "resultes-dev-utils"]
+	path = resultes-dev-utils
+	url = git@github.com:SPF-OST/resultes-dev-utils.git
