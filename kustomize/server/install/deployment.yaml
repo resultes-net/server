@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      resultes.net/component: server
+  template:
+    metadata:
+      labels:
+        resultes.net/component: server
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: example
+          image: ghcr.io/resultes-net/server
+          name: server
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always

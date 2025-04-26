@@ -5,6 +5,9 @@ pandas
 
 pyjwt
 passlib
+types-passlib
+
+pandas-stubs
 
 sqlmodel
 psycopg[binary]

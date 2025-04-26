@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      resultes.net/component: server-db
+  template:
+    metadata:
+      labels:
+        resultes.net/component: server-db
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: resultes
+          image: postgres
+          name: server-db
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+      restartPolicy: Always

@@ -5,7 +5,7 @@ import fastapi.openapi.utils as _fou
 import typer as _typer
 import typing_extensions as _te
 
-import main as _main
+import resultes_server.main as _main
 
 
 def export(

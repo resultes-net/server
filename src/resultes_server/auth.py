@@ -45,9 +45,7 @@ def get_current_user(token: str, session: _sqlm.Session) -> _mu.User:
     if user_name is None:
         raise credentials_exception
 
-    token_data = _TokenData(user_name=user_name)
-
-    user = _get_user(token_data.user_name, session)
+    user = _get_user(user_name, session)
     if user is None:
         raise credentials_exception
 

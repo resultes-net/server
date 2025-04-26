@@ -2,9 +2,10 @@ FROM python:3.12-slim-bookworm AS pip-dependencies
 
 WORKDIR /app
 
-COPY requirements/*.txt requirements/
+COPY requirements/run-3rd-party.txt requirements/
 
-RUN python -m pip install --no-cache-dir -r requirements/dev-3rd-party.txt
+RUN python -m pip install --upgrade wheel uv pip
+RUN python -m uv pip install --no-cache-dir -r requirements/run-3rd-party.txt
 
 FROM pip-dependencies
 

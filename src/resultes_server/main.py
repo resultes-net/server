@@ -1,6 +1,7 @@
 import contextlib as _ctx
 import io as _io
 import logging as _log
+import os as _os
 import typing as _tp
 
 import fastapi as _fapi
@@ -9,16 +10,20 @@ import pandas as _pd
 import sqlmodel as _sqlm
 import uvicorn as _uc
 
-import months as _months
+import resultes_server.auth as _auth
+import resultes_server.models.simulations.parameters.common.demand as _dapi
 import resultes_server.models.simulations.parameters.ttes as _tapi
-import resultes_server.models.user as _mu
 import resultes_server.models.simulations.simulation as _sim
-from . import auth as _auth
+import resultes_server.models.user as _mu
+import resultes_server.months as _months
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
+PORT = int(_os.environ["PORT"])
+DB_HOST_NAME = _os.environ["DB_HOST_NAME"]
+
 engine = _sqlm.create_engine(
-    "postgresql+psycopg://postgres:postgres@postgres/resultes", echo=True
+    f"postgresql+psycopg://postgres:postgres@{DB_HOST_NAME}/resultes", echo=True
 )
 
 
@@ -54,7 +59,7 @@ ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 
 @_ctx.asynccontextmanager
-async def lifespan(_: _fapi.FastAPI) -> _tp.AsyncIterable[None]:
+async def lifespan(_: _fapi.FastAPI) -> _tp.AsyncIterator[None]:
     create_db_and_tables()
     yield
 
@@ -98,7 +103,12 @@ async def create_file(
 
 @app.post("/ttes/params")
 async def post_params(params: _tapi.TtesParameters) -> dict:
-    data = await params.demand.profile.read()
+    profile = params.demand.profile
+
+    if isinstance(profile, _dapi.PreDefinedProfile):
+        raise ValueError("User defined profiles not supported.")
+
+    data = await profile.data.read()
 
     bytes_io = _io.BytesIO(data)
 
@@ -126,10 +136,10 @@ async def create_and_run_new_ttes_simulation(
     simulation = _sim.Simulation()
     session.add_all([simulation])
     session.commit()
-    return {"href": f"/models/ttes/{run.id}"}
+    return {"href": f"/models/ttes/{simulation.id}"}
 
 
 if __name__ == "__main__":
     _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
     _log.info("Starting server...")
-    _uc.run(app, host="0.0.0.0", port=80, log_config=None)
+    _uc.run(app, host="0.0.0.0", port=PORT, log_config=None)
