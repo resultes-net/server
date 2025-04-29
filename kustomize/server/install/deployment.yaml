@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: server
+
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/match-tag: true
+
 spec:
   replicas: 1
   selector:
@@ -13,13 +19,16 @@ spec:
         resultes.net/component: server
     spec:
       containers:
-        - env:
+        - image: ghcr.io/resultes-net/server:latest
+          name: server
+          env:
             - name: POSTGRES_PASSWORD
               value: example
-          image: ghcr.io/resultes-net/server
-          name: server
-          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 80
               protocol: TCP
+          imagePullSecrets:
+            - name: ghcr-io-auth-secret
+              namespace: resultes
       restartPolicy: Always

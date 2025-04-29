@@ -5,7 +5,5 @@ namespace: server
 
 resources:
 - namespaces.yaml
-#- contour
 - postgres
 - server
-#- httpRoutes.yaml
