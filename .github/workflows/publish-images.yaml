@@ -20,8 +20,9 @@ jobs:
           app-id: ${{ vars.READ_RESULTES_REPOS_APP_ID }}
           private-key: ${{ secrets.READ_RESULTES_REPOS_APP_KEY }}
           repositories: |
-            resultes-server
-            resultes-docker-utils
+            server
+            dev-utils
+            database-utils
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
