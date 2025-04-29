@@ -17,8 +17,8 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-          app-id: ${{ vars.RESULTES_DOCKER_UTILS_APP }}
-          private-key: ${{ secrets.RESULTES_DOCKER_UTILS_APP_KEY }}
+          app-id: ${{ vars.READ_RESULTES_REPOS_APP_ID }}
+          private-key: ${{ secrets.READ_RESULTES_REPOS_APP_KEY }}
           repositories: |
             resultes-server
             resultes-docker-utils
