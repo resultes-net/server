@@ -1,6 +1,6 @@
 [submodule "src/resultes_server/database_utils"]
 	path = src/resultes_server/database_utils
-	url = git@github.com:resultes-net/database-utils.git
+	url = https://github.com/resultes-net/database-utils.git
 [submodule "dev-utils"]
 	path = dev-utils
-	url = git@github.com:resultes-net/dev-utils.git
+	url = https://github.com/resultes-net/dev-utils.git
