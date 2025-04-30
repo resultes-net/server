@@ -28,6 +28,6 @@ spec:
           ports:
             - containerPort: 80
               protocol: TCP
-          imagePullSecrets:
-            - name: read-ghcr-io-auth-secret
+      imagePullSecrets:
+        - name: read-ghcr-io-auth-secret
       restartPolicy: Always
