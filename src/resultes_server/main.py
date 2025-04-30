@@ -64,14 +64,10 @@ async def lifespan(_: _fapi.FastAPI) -> _tp.AsyncIterator[None]:
     yield
 
 
-router = _fapi.APIRouter(prefix="/api")
-
 app = _fapi.FastAPI(lifespan=lifespan)
 
-app.include_router(router)
 
-
-@router.post("/token")
+@app.post("/token")
 async def create_token(
     form_data: _tp.Annotated[_fsec.OAuth2PasswordRequestForm, _fapi.Depends()],
     session: SessionDep,
@@ -80,7 +76,7 @@ async def create_token(
     return token
 
 
-@router.post("/profiles/")
+@app.post("/profiles/")
 async def create_file(
     file: _tp.Annotated[_fapi.UploadFile, _fapi.File()],
 ) -> dict:
@@ -105,7 +101,7 @@ async def create_file(
     return monthly_values
 
 
-@router.post("/ttes/params")
+@app.post("/ttes/params")
 async def post_params(params: _tapi.TtesParameters) -> dict:
     profile = params.demand.profile
 
@@ -133,7 +129,7 @@ async def post_params(params: _tapi.TtesParameters) -> dict:
     return monthly_values
 
 
-@router.post("/models/new/ttes")
+@app.post("/models/new/ttes")
 async def create_and_run_new_ttes_simulation(
     _: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
 ) -> dict:
