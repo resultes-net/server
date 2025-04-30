@@ -19,8 +19,11 @@ import resultes_server.months as _months
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
-PORT = int(_os.environ["PORT"])
-DB_HOST_NAME = _os.environ["DB_HOST_NAME"]
+PORT = int(_os.environ.get("PORT", "8080"))
+DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
+
+ROOT_PATH = _os.environ.get("ROOT_PATH", "")
+
 
 engine = _sqlm.create_engine(
     f"postgresql+psycopg://postgres:postgres@{DB_HOST_NAME}/resultes", echo=True
