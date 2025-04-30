@@ -24,6 +24,10 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               value: example
+            - name: PORT
+              value: 5432
+            - name: DB_HOST_NAME
+              value: server-db.server.svc.cluster.local
 
           ports:
             - containerPort: 80
