@@ -73,7 +73,7 @@ ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 @_ctx.asynccontextmanager
 async def lifespan(_: _fapi.FastAPI) -> _tp.AsyncIterator[None]:
-    create_db_and_tables()
+    # create_db_and_tables()
     yield
 
 
