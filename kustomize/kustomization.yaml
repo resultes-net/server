@@ -4,6 +4,5 @@ kind: Kustomization
 namespace: server
 
 resources:
-- namespaces.yaml
 - postgres
 - server
