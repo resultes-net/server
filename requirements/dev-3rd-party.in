@@ -1,6 +1,6 @@
--r test-3rd-party.in
-
 -c constraints.txt
+
+-r test-3rd-party.in
 
 typer
 typing-extensions

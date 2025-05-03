@@ -13,6 +13,13 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+    strategy:
+      matrix:
+        image:
+          - folder: server
+            name: server
+          - folder: migrate
+            name: server-migrate
     steps:
       - uses: actions/create-github-app-token@v1
         id: app-token
@@ -39,9 +46,9 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f docker/api/Dockerfile -t ghcr.io/resultes-net/server:latest .
+          docker build -f docker/${{ matrix.image.folder }}/Dockerfile -t ghcr.io/resultes-net/${{ matrix.image.name }}:latest .
 
       - name: Push Docker image
         id: push
         run: |
-          docker push ghcr.io/resultes-net/server:latest
+          docker push ghcr.io/resultes-net/${{ matrix.image.name }}:latest

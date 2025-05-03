@@ -1,6 +1,7 @@
--r run-3rd-party.in
-
 -c constraints.txt
+
+-r run-3rd-party.in
+-r migrate-3rd-party.in
 
 pytest
 pytest-coverage
@@ -9,5 +10,3 @@ mypy
 pylint
 
 httpx
-
-alembic
