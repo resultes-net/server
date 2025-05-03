@@ -8,7 +8,7 @@ import sqlmodel as _sqlm
 import resultes_server.database_utils.helpers as _dbh
 
 if _tp.TYPE_CHECKING:
-    from resultes_server.models.simulations import simulation as _sim
+    from .simulation import Simulation
 
 
 class State(_enum.Enum):
@@ -22,7 +22,7 @@ class Variation(_sqlm.SQLModel, table=True):
     created_on: _dbh.AwarePastDatetime = _dbh.UTC_NOW_FIELD
 
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
-    simulation: "_sim.Simulation" = _sqlm.Relationship(back_populates="variations")
+    simulation: "Simulation" = _sqlm.Relationship(back_populates="variations")
 
     object_storage_url: _pyd.HttpUrl = _dbh.HTTP_URL_FIELD
     relative_deck_file_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD

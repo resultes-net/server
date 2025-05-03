@@ -1,11 +1,15 @@
 import enum as _enum
+import typing as _tp
 
 import pydantic as _pyd
 import sqlmodel as _sqlm
 
 import resultes_server.database_utils.helpers as _dbh
 from . import variation as _var
-from .. import user as _user
+
+
+if _tp.TYPE_CHECKING:
+    from ..user import User
 
 
 @_enum.verify(_enum.UNIQUE)
@@ -30,7 +34,7 @@ class Simulation(_sqlm.SQLModel, table=True):
     parameters: str
 
     user_id: str = _dbh.create_id_field(foreign_key="user.id")
-    user: "_user.User" = _sqlm.Relationship(back_populates="simulations")
+    user: "User" = _sqlm.Relationship(back_populates="simulations")
 
     object_storage_url: _pyd.HttpUrl = _dbh.HTTP_URL_FIELD
 

@@ -6,18 +6,23 @@ import sqlmodel as _sqlm
 import resultes_server.database_utils.helpers as _dbh
 
 if _tp.TYPE_CHECKING:
-    from .simulations import simulation as _sim
+    from .simulations.simulation import Simulation
 
 
 class UserBase(_sqlm.SQLModel):
-    id: str | None = _dbh.ID_FIELD
     user_name: str
     email: _pyd.EmailStr
     full_name: str
+
+
+class UserCreate(UserBase):
+    hashed_password: str
+
+
+class UserRead(UserBase):
+    id: str | None = _dbh.ID_FIELD
     disabled: bool
 
 
-class User(UserBase, table=True):
-    hashed_password: str
-
-    simulations: list["_sim.Simulation"] = _sqlm.Relationship(back_populates="user")
+class User(UserRead, UserCreate, table=True):
+    simulations: list["Simulation"] = _sqlm.Relationship(back_populates="user")

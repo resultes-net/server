@@ -7,6 +7,7 @@ import pydantic as _pyd
 import sqlmodel as _sqlm
 
 import resultes_server.models.user as _mu
+import resultes_server.users as _users
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -20,10 +21,6 @@ _PWD_CONTEXT = _plctx.CryptContext(schemes=["bcrypt"], deprecated="auto")
 class Token(_pyd.BaseModel):
     access_token: str
     token_type: str
-
-
-class _TokenData(_pyd.BaseModel):
-    user_name: str | None = None
 
 
 def get_hashed_password(plain_password: str) -> str:
@@ -45,7 +42,7 @@ def get_current_user(token: str, session: _sqlm.Session) -> _mu.User:
     if user_name is None:
         raise credentials_exception
 
-    user = _get_user(user_name, session)
+    user = _users.get_user(user_name, session)
     if user is None:
         raise credentials_exception
 
@@ -75,18 +72,11 @@ def create_token(user_name: str, password: str, session: _sqlm.Session) -> Token
 def _authenticate_user(
     user_name: str, password: str, session: _sqlm.Session
 ) -> _mu.User | None:
-    user = _get_user(user_name, session)
+    user = _users.get_user(user_name, session)
     if not user:
         return None
     if not _verify_password(password, user.hashed_password):
         return None
-    return user
-
-
-def _get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:
-    statement = _sqlm.select(_mu.User).where(_mu.User.user_name == user_name)
-    results = session.exec(statement)
-    user = results.first()
     return user
 
 

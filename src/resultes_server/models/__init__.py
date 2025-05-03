@@ -1,5 +1,4 @@
-from . import user as _user
-from .simulations import simulation as _sim
+from .simulations import *
+from .user import *
 
-_sim.Simulation.model_rebuild()
-_user.User.model_rebuild()
+__all__ = ["User"] + simulations.__all__

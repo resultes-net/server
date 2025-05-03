@@ -1,5 +1,4 @@
-from . import simulation as _sim
-from . import variation as _var
+from .simulation import Simulation
+from .variation import Variation
 
-_sim.Simulation.model_rebuild()
-_var.Variation.model_rebuild()
+__all__ = ["Simulation", "Variation"]
