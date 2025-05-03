@@ -71,8 +71,8 @@ async def create_token(
 
 @app.post("/user")
 async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
-    user_create = _users.get_user(user_create.user_name, session)
-    if user_create:
+    user = _users.get_user(user_create.user_name, session)
+    if user:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_409_CONFLICT,
             detail="User name is taken.",

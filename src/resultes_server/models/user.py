@@ -16,7 +16,7 @@ class UserBase(_sqlm.SQLModel):
 
 
 class UserCreate(UserBase):
-    hashed_password: str
+    plain_password: str
 
 
 class UserRead(UserBase):
@@ -24,5 +24,6 @@ class UserRead(UserBase):
     disabled: bool
 
 
-class User(UserRead, UserCreate, table=True):
+class User(UserRead, table=True):
+    hashed_password: str
     simulations: list["Simulation"] = _sqlm.Relationship(back_populates="user")
