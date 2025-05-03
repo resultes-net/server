@@ -41,8 +41,7 @@ spec:
               value: example
             - name: DB_HOST_NAME
               value: server-db.server.svc.cluster.local
-          command: python
-          args: ["-m", "alembic", "upgrade", "head"]
+          command: [ "python", "-m", "alembic", "upgrade", "head" ]
 
       imagePullSecrets:
         - name: read-ghcr-io-auth-secret
