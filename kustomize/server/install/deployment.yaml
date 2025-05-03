@@ -34,14 +34,13 @@ spec:
             - containerPort: 80
               protocol: TCP
       initContainers:
-        - image: ghcr.io/resultes-net/server:latest
+        - image: ghcr.io/resultes-net/server-migrate:latest
           name: migrate
           env:
             - name: POSTGRES_PASSWORD
               value: example
             - name: DB_HOST_NAME
               value: server-db.server.svc.cluster.local
-          command: [ "python", "-m", "alembic", "upgrade", "head" ]
 
       imagePullSecrets:
         - name: read-ghcr-io-auth-secret
