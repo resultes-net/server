@@ -42,7 +42,11 @@ spec:
             - name: DB_HOST_NAME
               value: server-db.server.svc.cluster.local
           command: python
-          args: ["-m", "alembic", "upgrade", "head"]
+          args:
+            - -m
+            - alembic
+            - upgrade
+            - head
 
       imagePullSecrets:
         - name: read-ghcr-io-auth-secret
