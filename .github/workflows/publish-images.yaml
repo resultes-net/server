@@ -30,6 +30,7 @@ jobs:
             server
             dev-utils
             database-utils
+            docker-utils
             openapi-schema
       - name: Checkout repository
         uses: actions/checkout@v4
