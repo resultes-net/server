@@ -30,10 +30,20 @@ spec:
               value: server-db.server.svc.cluster.local
             - name: ROOT_PATH
               value: /api
-
           ports:
             - containerPort: 80
               protocol: TCP
+      initContainers:
+        - image: ghcr.io/resultes-net/server:latest
+          name: migrate
+          env:
+            - name: POSTGRES_PASSWORD
+              value: example
+            - name: DB_HOST_NAME
+              value: server-db.server.svc.cluster.local
+          command: python
+          args: ["-m", "alembic", "upgrade", "head"]
+
       imagePullSecrets:
         - name: read-ghcr-io-auth-secret
       restartPolicy: Always

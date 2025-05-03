@@ -10,12 +10,12 @@ RUN python -m uv pip install --no-cache-dir -r requirements/run-3rd-party.txt
 FROM pip-dependencies
 
 COPY src/resultes_server src/resultes_server
-COPY pyproject.toml pyproject.toml
+COPY pyproject.toml ./
 
 RUN python -m pip install --no-cache-dir .
 
 COPY alembic alembic
-COPY alembic.ini alembic.ini
+COPY alembic.ini ./
 
 
 ENTRYPOINT ["python", "src/resultes_server/main.py"]
