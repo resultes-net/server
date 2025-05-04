@@ -7,11 +7,15 @@ import typing_extensions as _te
 
 import resultes_server.main as _main
 
+DEFAULT_OUTPUT_FILE_PATH = (
+    _pl.Path(__file__).parents[2] / "openapi-schema" / "openapi.json"
+)
+
 
 def export(
     output_file_path: _te.Annotated[
         _pl.Path, _typer.Argument(dir_okay=False, writable=True)
-    ]
+    ] = DEFAULT_OUTPUT_FILE_PATH,
 ):
     schema = _fou.get_openapi(
         title=_main.app.title,
