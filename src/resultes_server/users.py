@@ -23,5 +23,6 @@ def create_user(user_create: _mu.UserCreate, session: _sqlm.Session) -> _mu.User
     )
 
     session.add(user)
+    session.commit()
 
     return user
