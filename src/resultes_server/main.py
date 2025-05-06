@@ -69,22 +69,22 @@ async def create_token(
     return token
 
 
-@app.post("/user")
-async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
-    user = _users.get_user(user_create.user_name, session)
-    if user:
-        raise _fapi.HTTPException(
-            status_code=_fapi.status.HTTP_409_CONFLICT,
-            detail="User name is taken.",
-        )
+# @app.post("/user")
+# async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
+#     user = _users.get_user(user_create.user_name, session)
+#     if user:
+#         raise _fapi.HTTPException(
+#             status_code=_fapi.status.HTTP_409_CONFLICT,
+#             detail="User name is taken.",
+#         )
 
-    user = _users.create_user(user_create, session)
+#     user = _users.create_user(user_create, session)
 
-    return user
+#     return user
 
 
-@app.post("/models/new/ttes")
-async def create_and_run_new_ttes_simulation(
+@app.post("/simulations")
+async def create_and_run_new_simulation(
     _: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
 ) -> dict:
     simulation = _sim.Simulation()
