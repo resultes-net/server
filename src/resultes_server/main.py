@@ -83,8 +83,8 @@ async def create_token(
 #     return user
 
 
-@app.post("/models/new/ttes")
-async def create_and_run_new_ttes_simulation(
+@app.post("/simulations")
+async def create_and_run_new_simulation(
     _: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
 ) -> dict:
     simulation = _sim.Simulation()
