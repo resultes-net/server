@@ -1,4 +1,5 @@
 import datetime as _dt
+import logging as _log
 
 import fastapi as _fapi
 import jwt as _jwt
@@ -8,6 +9,8 @@ import sqlmodel as _sqlm
 
 import resultes_server.models.user as _mu
 import resultes_server.users as _users
+
+_LOGGER = _log.getLogger(__name__)
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -35,7 +38,8 @@ def get_current_user(token: str, session: _sqlm.Session) -> _mu.User:
     )
     try:
         payload = _jwt.decode(token, _SECRET_KEY, algorithms=[_ALGORITHM])
-    except _jwt.InvalidTokenError:
+    except _jwt.InvalidTokenError as invalidTokenError:
+        _LOGGER.info("Failed to decode token: %s.", invalidTokenError)
         raise credentials_exception
 
     user_name = payload.get("sub")
