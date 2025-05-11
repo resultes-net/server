@@ -17,6 +17,7 @@ class UserBase(_sqlm.SQLModel):
 
 class UserCreate(UserBase):
     plain_password: str
+    registration_key: str
 
 
 class UserRead(UserBase):

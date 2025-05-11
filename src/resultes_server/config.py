@@ -1,7 +1,5 @@
 import os as _os
 
-PORT = int(_os.environ.get("PORT", "8080"))
-
 DB_HOST_NAME = _os.environ.get("DB_HOST_NAME")
 if not DB_HOST_NAME:
     import socket

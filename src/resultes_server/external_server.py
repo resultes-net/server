@@ -1,5 +1,5 @@
-import contextlib as _ctx
 import logging as _log
+import os as _os
 import typing as _tp
 
 import fastapi as _fapi
@@ -18,11 +18,6 @@ LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 
 engine = _sqlm.create_engine(_config.DB_CONNECTION_STRING, echo=True)
-
-
-def create_db_and_tables() -> None:
-    # _sqlm.SQLModel.metadata.create_all(engine)
-    pass
 
 
 def get_session() -> _tp.Iterable[_sqlm.Session]:
@@ -51,13 +46,7 @@ def get_current_active_user(current_user: UserDep) -> _mu.User:
 ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 
-@_ctx.asynccontextmanager
-async def lifespan(_: _fapi.FastAPI) -> _tp.AsyncIterator[None]:
-    # create_db_and_tables()
-    yield
-
-
-app = _fapi.FastAPI(root_path=_config.ROOT_PATH, lifespan=lifespan)
+app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
 
 
 @app.post("/token")
@@ -69,31 +58,25 @@ async def create_token(
     return token
 
 
-# @app.post("/user")
-# async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
-#     user = _users.get_user(user_create.user_name, session)
-#     if user:
-#         raise _fapi.HTTPException(
-#             status_code=_fapi.status.HTTP_409_CONFLICT,
-#             detail="User name is taken.",
-#         )
-
-#     user = _users.create_user(user_create, session)
-
-#     return user
-
+@app.post("/user")
+async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
+    return _users.create_user(user_create, session)
 
 @app.post("/simulations")
 async def create_and_run_new_simulation(
-    _: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
+    parameters: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
 ) -> dict:
-    simulation = _sim.Simulation()
+    simulation = _sim.Simulation(
+        type=_sim.Type.TTES,
+        parameters=parameters,
+    )
     session.add_all([simulation])
     session.commit()
-    return {"href": f"/models/ttes/{simulation.id}"}
+    return {"href": f"/simulations/{simulation.id}"}
 
 
 if __name__ == "__main__":
     _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
     _log.info("Starting server...")
-    _uc.run(app, host="0.0.0.0", port=_config.PORT, log_config=None)
+    port = int(_os.environ.get("PORT", "8080"))
+    _uc.run(app, host="0.0.0.0", port=port, log_config=None)

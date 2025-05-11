@@ -1,8 +1,8 @@
 """Initial migration.
 
-Revision ID: f00b82144b9e
+Revision ID: d83096fbe3d6
 Revises: 
-Create Date: 2025-05-04 10:21:27.035029
+Create Date: 2025-05-11 15:25:54.467819
 
 """
 from typing import Sequence, Union
@@ -15,7 +15,7 @@ import resultes_server
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f00b82144b9e'
+revision: str = 'd83096fbe3d6'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,12 +34,12 @@ def upgrade() -> None:
     sa.UniqueConstraint('id')
     )
     op.create_table('simulation',
+    sa.Column('type', sa.Enum('TTES', 'PTES', 'BTES', name='type'), nullable=False),
+    sa.Column('parameters', resultes_server.type_decorators.PydanticJsonTypeDecorator(), nullable=False),
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=False),
     sa.Column('created_on', sa.DateTime(), nullable=False),
-    sa.Column('type', sa.Enum('TTES', 'PTES', 'BTES', name='type'), nullable=False),
-    sa.Column('parameters', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True),
-    sa.Column('object_storage_url', resultes_server.database_utils.helpers.HttpUrlTypeDecorator(length=1024), nullable=False),
+    sa.Column('object_storage_url', resultes_server.database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
     sa.Column('state', sa.Enum('WAITING_FOR_VARIATION_CREATION', 'WAITING_FOR_VARIATION_RUNS', 'WAITING_FOR_CROSS_VARIATION_PROCESSING', 'DONE', name='state'), nullable=False),
     sa.Column('state_changed_on', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
@@ -51,10 +51,10 @@ def upgrade() -> None:
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=False),
     sa.Column('created_on', sa.DateTime(), nullable=False),
     sa.Column('simulation_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True),
-    sa.Column('object_storage_url', resultes_server.database_utils.helpers.HttpUrlTypeDecorator(length=1024), nullable=False),
+    sa.Column('object_storage_url', resultes_server.database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
     sa.Column('relative_deck_file_path', resultes_server.database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
     sa.Column('relative_process_script_path', resultes_server.database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
-    sa.Column('state', sa.Enum('WAITING', 'RUNNING', 'DONE', name='state'), nullable=False),
+    sa.Column('state', sa.Enum('WAITING', 'RUNNING', 'DONE', name='variationstate'), nullable=False),
     sa.ForeignKeyConstraint(['simulation_id'], ['simulation.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),

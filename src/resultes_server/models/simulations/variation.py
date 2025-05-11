@@ -11,7 +11,8 @@ if _tp.TYPE_CHECKING:
     from .simulation import Simulation
 
 
-class State(_enum.Enum):
+@_enum.verify(_enum.UNIQUE)
+class VariationState(_enum.Enum):
     WAITING = "waiting"
     RUNNING = "running"
     DONE = "done"
@@ -28,4 +29,4 @@ class Variation(_sqlm.SQLModel, table=True):
     relative_deck_file_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
     relative_process_script_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
 
-    state: State = State.WAITING
+    state: VariationState = VariationState.WAITING
