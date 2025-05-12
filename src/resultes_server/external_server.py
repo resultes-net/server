@@ -62,6 +62,14 @@ async def create_token(
 async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
     return _users.create_user(user_create, session)
 
+
+@app.put("/user")
+async def modify_user(
+    user_modify: _mu.UserModify, session: SessionDep, user: ActiveUserDep
+) -> _mu.UserRead:
+    return _users.update_user(user_modify, user, session)
+
+
 @app.post("/simulations")
 async def create_and_run_new_simulation(
     parameters: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep

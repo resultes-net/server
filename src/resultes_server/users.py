@@ -43,3 +43,20 @@ def create_user(user_create: _mu.UserCreate, session: _sqlm.Session) -> _mu.User
     session.commit()
 
     return user
+
+def update_user(user_modfiy: _mu.UserModify, user: _mu.User, session: _sqlm.Session) -> _mu.UserRead:
+    user_or_none = _auth.authenticate_user(user.user_name, user_modfiy.old_plain_password, session)
+    if not user_or_none:
+        raise _fapi.HTTPException(
+            status_code=_fapi.status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Old password is incorrect."
+        )
+    assert user_or_none == user
+
+    new_hashed_password = _auth.get_hashed_password(user_modfiy.new_plain_password)
+
+    user.hashed_password = new_hashed_password
+
+    session.commit()
+
+    return user

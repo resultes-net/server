@@ -19,6 +19,10 @@ class UserCreate(UserBase):
     plain_password: str
     registration_key: str
 
+class UserModify(_pyd.BaseModel):
+    old_plain_password: str
+    new_plain_password: str
+
 
 class UserRead(UserBase):
     id: str | None = _dbh.ID_FIELD

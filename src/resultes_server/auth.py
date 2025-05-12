@@ -61,8 +61,8 @@ def get_current_active_user(
     return current_user
 
 
-def create_token(user_name: str, password: str, session: _sqlm.Session) -> Token:
-    user = _authenticate_user(user_name, password, session)
+def create_token(user_name: str, plain_password: str, session: _sqlm.Session) -> Token:
+    user = authenticate_user(user_name, plain_password, session)
     if not user:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_401_UNAUTHORIZED,
@@ -73,13 +73,13 @@ def create_token(user_name: str, password: str, session: _sqlm.Session) -> Token
     return Token(access_token=access_token, token_type="bearer")
 
 
-def _authenticate_user(
-    user_name: str, password: str, session: _sqlm.Session
+def authenticate_user(
+    user_name: str, plain_password: str, session: _sqlm.Session
 ) -> _mu.User | None:
     user = _users.get_user(user_name, session)
     if not user:
         return None
-    if not _verify_password(password, user.hashed_password):
+    if not _verify_password(plain_password, user.hashed_password):
         return None
     return user
 
