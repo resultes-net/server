@@ -1,9 +1,8 @@
-import sqlmodel as _sqlm
 import fastapi as _fapi
+import sqlmodel as _sqlm
 
 import resultes_server.auth as _auth
 import resultes_server.models.user as _mu
-
 
 
 def get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:
@@ -14,6 +13,7 @@ def get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:
 
 
 _REGISTRATION_KEY = "579e57a617ec"
+
 
 def create_user(user_create: _mu.UserCreate, session: _sqlm.Session) -> _mu.User:
     if user_create.registration_key != _REGISTRATION_KEY:
@@ -44,12 +44,17 @@ def create_user(user_create: _mu.UserCreate, session: _sqlm.Session) -> _mu.User
 
     return user
 
-def update_user(user_modfiy: _mu.UserModify, user: _mu.User, session: _sqlm.Session) -> _mu.UserRead:
-    user_or_none = _auth.authenticate_user(user.user_name, user_modfiy.old_plain_password, session)
+
+def modify_user(
+    user_modfiy: _mu.UserModify, user: _mu.User, session: _sqlm.Session
+) -> _mu.UserRead:
+    user_or_none = _auth.authenticate_user(
+        user.user_name, user_modfiy.old_plain_password, session
+    )
     if not user_or_none:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Old password is incorrect."
+            detail="Old password is incorrect.",
         )
     assert user_or_none == user
 

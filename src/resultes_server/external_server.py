@@ -67,7 +67,7 @@ async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.U
 async def modify_user(
     user_modify: _mu.UserModify, session: SessionDep, user: ActiveUserDep
 ) -> _mu.UserRead:
-    return _users.update_user(user_modify, user, session)
+    return _users.modify_user(user_modify, user, session)
 
 
 @app.post("/simulations")
