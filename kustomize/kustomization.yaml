@@ -4,5 +4,6 @@ kind: Kustomization
 namespace: server
 
 resources:
-- postgres
-- server
+  - postgres
+  - external_server
+  - internal_server
