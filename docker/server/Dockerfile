@@ -15,8 +15,6 @@ COPY pyproject.toml ./
 
 RUN docker-utils/uv-pip-install.sh .
 
-COPY alembic alembic
-COPY alembic.ini ./
+WORKDIR /src/resultes_server
 
-
-ENTRYPOINT ["python", "src/resultes_server/main.py"]
+ENTRYPOINT ["python"]

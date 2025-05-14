@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server
+  name: external-server
 
   annotations:
     keel.sh/policy: force
@@ -20,7 +20,8 @@ spec:
     spec:
       containers:
         - image: ghcr.io/resultes-net/server:latest
-          name: server
+          name: external-server
+          args: ["external_server.py"]
           env:
             - name: POSTGRES_PASSWORD
               value: example

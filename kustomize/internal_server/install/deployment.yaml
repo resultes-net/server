@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internal-server
+
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/match-tag: true
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      resultes.net/component: server
+  template:
+    metadata:
+      labels:
+        resultes.net/component: server
+    spec:
+      containers:
+        - image: ghcr.io/resultes-net/server:latest
+          name: internal-server
+          args: ["internal_server.py"]
+          env:
+            - name: POSTGRES_PASSWORD
+              value: example
+            - name: PORT
+              value: "8000"
+            - name: DB_HOST_NAME
+              value: server-db.server.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+      initContainers:
+        - image: ghcr.io/resultes-net/server-migrate:latest
+          name: migrate
+          env:
+            - name: POSTGRES_PASSWORD
+              value: example
+            - name: DB_HOST_NAME
+              value: server-db.server.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+
+      imagePullSecrets:
+        - name: read-ghcr-io-auth-secret
+      restartPolicy: Always
