@@ -15,6 +15,6 @@ COPY pyproject.toml ./
 
 RUN docker-utils/uv-pip-install.sh .
 
-WORKDIR /src/resultes_server
+WORKDIR /app/src/resultes_server
 
 ENTRYPOINT ["python"]
