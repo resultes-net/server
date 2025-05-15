@@ -16,8 +16,7 @@ def get_simulations_waiting_for_variations_creation_by_user_id(
     rows = session.exec(query)
 
     def get_user_id(simulation: _sim.Simulation) -> str:
-        assert simulation.id
-        return simulation.id
+        return simulation.user_id
 
     simulations_by_user_id = {k: list(g) for k, g in _it.groupby(rows, key=get_user_id)}
 
