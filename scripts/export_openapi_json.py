@@ -11,7 +11,7 @@ import resultes_server.internal_server as _int
 
 _APPS = [("external-server", _ext.app), ("internal-server", _int.app)]
 
-DEFAULT_OUTPUT_DIR_PATH = _pl.Path(__file__).parents[2] / "openapi-schema"
+DEFAULT_OUTPUT_DIR_PATH = _pl.Path(__file__).parents[1] / "openapi-schema"
 
 
 def export(
