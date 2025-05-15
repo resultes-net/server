@@ -1,16 +1,16 @@
+import collections.abc as _cabc
 import logging as _log
 import typing as _tp
-import collections.abc as _cabc
 
 import fastapi as _fapi
 import sqlmodel as _sqlm
 import uvicorn as _uc
 
 import resultes_server.config as _config
-import resultes_server.models.simulations.variation as _var
 import resultes_server.models.simulations.simulation as _sim
-import resultes_server.variations as _vars
+import resultes_server.models.simulations.variation as _var
 import resultes_server.simulations as _sims
+import resultes_server.variations as _vars
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -39,7 +39,8 @@ async def get_waiting_variations_by_user_id(
 
 @app.get("/simulations")
 async def get_simulations_waiting_for_variations_creation_by_user_id(
-    state: _tp.Literal["waiting-for-variations-creation"], session: SessionDep
+    state: _tp.Literal["waiting-for-variations-creation"],
+    session: SessionDep
 ) -> _cabc.Mapping[str, _cabc.Sequence[_sim.Simulation]]:
     return _sims.get_simulations_waiting_for_variations_creation_by_user_id(session)
 

@@ -75,6 +75,7 @@ async def create_and_run_new_simulation(
     parameters: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
 ) -> dict:
     simulation = _sim.Simulation(
+        user=user,
         type=_sim.Type.TTES,
         parameters=parameters,
     )
