@@ -3,3 +3,4 @@
 -r run-3rd-party.in
 
 alembic
+alembic-postgresql-enum

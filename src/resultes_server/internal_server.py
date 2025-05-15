@@ -8,7 +8,9 @@ import uvicorn as _uc
 
 import resultes_server.config as _config
 import resultes_server.models.simulations.variation as _var
+import resultes_server.models.simulations.simulation as _sim
 import resultes_server.variations as _vars
+import resultes_server.simulations as _sims
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -27,13 +29,20 @@ SessionDep = _tp.Annotated[_sqlm.Session, _fapi.Depends(get_session)]
 app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
 
 
-
 @app.get("/variations")
-async def create_and_run_new_simulation(
+async def get_waiting_variations_by_user_id(
+    state: _tp.Literal["waiting"],
     session: SessionDep,
-    state: _tp.Literal["waiting"]
 ) -> _cabc.Mapping[str, _cabc.Sequence[_var.Variation]]:
     return _vars.get_waiting_variations_by_user_id(session)
+
+
+@app.get("/simulations")
+async def get_simulations_waiting_for_variations_creation_by_user_id(
+    state: _tp.Literal["waiting-for-variations-creation"], session: SessionDep
+) -> _cabc.Mapping[str, _cabc.Sequence[_sim.Simulation]]:
+    return _sims.get_simulations_waiting_for_variations_creation_by_user_id(session)
+
 
 if __name__ == "__main__":
     _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)

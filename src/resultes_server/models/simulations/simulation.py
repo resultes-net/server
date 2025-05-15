@@ -21,8 +21,8 @@ class Type(_enum.Enum):
 
 
 @_enum.verify(_enum.UNIQUE)
-class State(_enum.Enum):
-    WAITING_FOR_VARIATION_CREATION = "waiting-for-variation-creation"
+class SimulationState(_enum.Enum):
+    WAITING_FOR_VARIATIONS_CREATION = "waiting-for-variations-creation"
     WAITING_FOR_VARIATION_RUNS = "waiting-for-variation-runs"
     WAITING_FOR_CROSS_VARIATION_PROCESSING = "waiting-for-cross-variation-processing"
     DONE = "done"
@@ -40,7 +40,7 @@ class Simulation(_sqlm.SQLModel, table=True):
 
     object_storage_url: _pyd.HttpUrl | None = _dbh.HTTP_URL_FIELD
 
-    state: State = State.WAITING_FOR_VARIATION_CREATION
+    state: SimulationState = SimulationState.WAITING_FOR_VARIATIONS_CREATION
     state_changed_on: _dbh.AwarePastDatetime = _dbh.UTC_NOW_FIELD
 
     variations: list[_var.Variation] = _sqlm.Relationship(back_populates="simulation")
