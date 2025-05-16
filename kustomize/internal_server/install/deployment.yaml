@@ -12,11 +12,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      resultes.net/component: server
+      resultes.net/component: internal-server
   template:
     metadata:
       labels:
-        resultes.net/component: server
+        resultes.net/component: internal-server
     spec:
       containers:
         - image: ghcr.io/resultes-net/server:latest
