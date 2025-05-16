@@ -12,6 +12,7 @@ import resultes_server.config as _config
 import resultes_server.models.simulations.parameters.ttes as _tapi
 import resultes_server.models.simulations.simulation as _sim
 import resultes_server.models.user as _mu
+import resultes_server.pydantic_models.user as _pu
 import resultes_server.users as _users
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
@@ -59,14 +60,14 @@ async def create_token(
 
 
 @app.post("/user")
-async def create_user(user_create: _mu.UserCreate, session: SessionDep) -> _mu.UserRead:
+async def create_user(user_create: _pu.UserCreate, session: SessionDep) -> _pu.UserRead:
     return _users.create_user(user_create, session)
 
 
 @app.put("/user")
 async def modify_user(
-    user_modify: _mu.UserModify, session: SessionDep, user: ActiveUserDep
-) -> _mu.UserRead:
+    user_modify: _pu.UserModify, session: SessionDep, user: ActiveUserDep
+) -> _pu.UserRead:
     return _users.modify_user(user_modify, user, session)
 
 
