@@ -6,7 +6,7 @@
 #    requirements upgrade
 #
 -r migrate-3rd-party.txt
-astroid==3.3.9
+astroid==3.3.10
 black==25.1.0
 coverage==7.8.0
 dill==0.4.0
@@ -17,9 +17,9 @@ mypy==1.15.0
 mypy-extensions==1.1.0
 packaging==25.0
 pathspec==0.12.1
-platformdirs==4.3.7
-pluggy==1.5.0
-pylint==3.3.6
+platformdirs==4.3.8
+pluggy==1.6.0
+pylint==3.3.7
 pytest==8.3.5
 pytest-cov==6.1.1
 pytest-cover==3.0.0

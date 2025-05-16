@@ -1,9 +1,9 @@
 import typing as _tp
 
+import resultes_pydantic_models.user as _puser
 import sqlmodel as _sqlm
 
 import resultes_server.database_utils.helpers as _dbh
-import resultes_server.pydantic_models.user as _puser
 
 if _tp.TYPE_CHECKING:
     from .simulations.simulation import Simulation

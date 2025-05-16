@@ -1,4 +1,2 @@
-markupsafe==3.0.2
-psycopg==3.2.6
-typer==0.15.2
-typing-extensions==4.11.0
+click==8.1.8
+typer==0.15.3

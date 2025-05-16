@@ -3,7 +3,7 @@ import itertools as _it
 
 import sqlmodel as _sqlm
 
-import resultes_server.models.simulations.simulation as _sim
+import resultes_server.sqlmodel_models.simulations.simulation as _sim
 
 
 def get_simulations_waiting_for_variations_creation_by_user_id(

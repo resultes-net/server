@@ -8,7 +8,7 @@ from alembic import context
 import alembic_postgresql_enum
 
 from sqlmodel import SQLModel
-from resultes_server.models import *
+from resultes_server.sqlmodel_models import *
 
 import resultes_server.config as server_config
 

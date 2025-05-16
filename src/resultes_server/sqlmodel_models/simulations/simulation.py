@@ -2,15 +2,15 @@ import enum as _enum
 import typing as _tp
 
 import pydantic as _pyd
+import resultes_pydantic_models.simulations.parameters.ttes as _ttes
 import sqlmodel as _sqlm
 
 import resultes_server.database_utils.helpers as _dbh
-import resultes_server.models.simulations.parameters.ttes as _ttes
-import resultes_server.models.simulations.variation as _var
+import resultes_server.sqlmodel_models.simulations.variation as _var
 import resultes_server.type_decorators as _td
 
 if _tp.TYPE_CHECKING:
-    from ..user import User
+    from resultes_server.sqlmodel_models.user import User
 
 
 @_enum.verify(_enum.UNIQUE)

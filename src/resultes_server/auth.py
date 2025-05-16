@@ -7,7 +7,7 @@ import passlib.context as _plctx
 import pydantic as _pyd
 import sqlmodel as _sqlm
 
-import resultes_server.models.user as _mu
+import resultes_server.sqlmodel_models.user as _mu
 import resultes_server.users as _users
 
 _LOGGER = _log.getLogger(__name__)

@@ -1,9 +1,9 @@
 import fastapi as _fapi
+import resultes_pydantic_models.user as _pu
 import sqlmodel as _sqlm
 
 import resultes_server.auth as _auth
-import resultes_server.models.user as _mu
-import resultes_server.pydantic_models.user as _pu
+import resultes_server.sqlmodel_models.user as _mu
 
 
 def get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:

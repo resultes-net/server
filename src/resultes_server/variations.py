@@ -2,8 +2,8 @@ import collections.abc as _cabc
 
 import sqlmodel as _sqlm
 
-import resultes_server.models.simulations as _sim
-import resultes_server.models.simulations.variation as _var
+import resultes_server.sqlmodel_models.simulations as _sim
+import resultes_server.sqlmodel_models.simulations.variation as _var
 
 
 def get_waiting_variations_by_user_id(

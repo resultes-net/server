@@ -1,9 +1,8 @@
 import pydantic as _pyd
+import resultes_pydantic_models.simulations.parameters.ttes as _pttes
 import sqlalchemy as _sqla
 import sqlalchemy.types as _sqlt
 import sqlmodel as _sqlm
-
-import resultes_server.models.simulations.parameters.ttes as _pttes
 
 
 class PydanticJsonTypeDecorator(_sqlt.TypeDecorator):

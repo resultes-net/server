@@ -4,15 +4,15 @@ import typing as _tp
 
 import fastapi as _fapi
 import fastapi.security as _fsec
+import resultes_pydantic_models.simulations.parameters.ttes as _tapi
+import resultes_pydantic_models.user as _pu
 import sqlmodel as _sqlm
 import uvicorn as _uc
 
 import resultes_server.auth as _auth
 import resultes_server.config as _config
-import resultes_server.models.simulations.parameters.ttes as _tapi
-import resultes_server.models.simulations.simulation as _sim
-import resultes_server.models.user as _mu
-import resultes_server.pydantic_models.user as _pu
+import resultes_server.sqlmodel_models.simulations.simulation as _sim
+import resultes_server.sqlmodel_models.user as _mu
 import resultes_server.users as _users
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
