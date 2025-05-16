@@ -7,4 +7,4 @@ spec:
     - port: 80
       targetPort: 80
   selector:
-    resultes.net/component: server
+    app.kubernetes.io/name: external-server

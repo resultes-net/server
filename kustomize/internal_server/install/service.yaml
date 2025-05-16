@@ -7,4 +7,4 @@ spec:
     - port: 8000
       targetPort: 8000
   selector:
-    resultes.net/component: server
+    app.kubernetes.io/name: internal-server
