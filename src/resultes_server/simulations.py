@@ -4,13 +4,14 @@ import itertools as _it
 import sqlmodel as _sqlm
 
 import resultes_server.sqlmodel_models.simulations.simulation as _sim
+import resultes_pydantic_models.simulations.simulation as _psim
 
 
 def get_simulations_waiting_for_variations_creation_by_user_id(
     session: _sqlm.Session,
 ) -> _cabc.Mapping[str, _cabc.Sequence[_sim.Simulation]]:
     query = _sqlm.select(_sim.Simulation).where(
-        _sim.Simulation.state == _sim.SimulationState.WAITING_FOR_VARIATIONS_CREATION
+        _sim.Simulation.state == _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION
     )
 
     rows = session.exec(query)

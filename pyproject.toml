@@ -18,6 +18,3 @@ dynamic = ["version"]
 
 [tool.setuptools.package-data]
 resultes_server = ["py.typed"]
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements/run-3rd-party.in"]}

@@ -3,12 +3,12 @@ import logging as _log
 import typing as _tp
 
 import fastapi as _fapi
+import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import uvicorn as _uc
 
 import resultes_server.config as _config
 import resultes_server.simulations as _sims
-import resultes_server.sqlmodel_models.simulations.simulation as _sim
 import resultes_server.sqlmodel_models.simulations.variation as _var
 import resultes_server.variations as _vars
 
@@ -40,7 +40,7 @@ async def get_waiting_variations_by_user_id(
 @app.get("/simulations")
 async def get_simulations_waiting_for_variations_creation_by_user_id(
     state: _tp.Literal["waiting-for-variations-creation"], session: SessionDep
-) -> _cabc.Mapping[str, _cabc.Sequence[_sim.Simulation]]:
+) -> _cabc.Mapping[str, _cabc.Sequence[_psim.Simulation]]:
     return _sims.get_simulations_waiting_for_variations_creation_by_user_id(session)
 
 
