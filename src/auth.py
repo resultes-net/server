@@ -7,8 +7,8 @@ import passlib.context as _plctx
 import pydantic as _pyd
 import sqlmodel as _sqlm
 
-import resultes_server.sqlmodel_models.user as _mu
-import resultes_server.users as _users
+import sqlmodel_models.user as _mu
+import users as _users
 
 _LOGGER = _log.getLogger(__name__)
 
@@ -84,7 +84,7 @@ def authenticate_user(
     return user
 
 
-def _verify_password(plain_password: str, hashed_password) -> bool:
+def _verify_password(plain_password: str, hashed_password: str) -> bool:
     return _PWD_CONTEXT.verify(plain_password, hashed_password)
 
 

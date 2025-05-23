@@ -3,9 +3,10 @@ import pathlib as _pl
 import typing as _tp
 
 import pydantic as _pyd
+import resultes_pydantic_models.common as _pcom
 import sqlmodel as _sqlm
 
-import resultes_server.database_utils.helpers as _dbh
+import database_utils.helpers as _dbh
 
 if _tp.TYPE_CHECKING:
     from .simulation import Simulation
@@ -20,7 +21,7 @@ class VariationState(_enum.Enum):
 
 class Variation(_sqlm.SQLModel, table=True):
     id: str | None = _dbh.ID_FIELD
-    created_on: _dbh.AwarePastDatetime = _dbh.UTC_NOW_FIELD
+    created_on: _pcom.AwarePastDatetime = _dbh.UTC_NOW_FIELD
 
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
     simulation: "Simulation" = _sqlm.Relationship(back_populates="variations")

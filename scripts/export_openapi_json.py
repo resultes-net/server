@@ -6,8 +6,12 @@ import fastapi as _fapi
 import typer as _typer
 import typing_extensions as _te
 
-import resultes_server.external_server as _ext
-import resultes_server.internal_server as _int
+import sys as _sys
+
+_sys.path.insert(0, str(_pl.Path(__file__).parents[1] / "src"))
+
+import external_server as _ext
+import internal_server as _int
 
 _APPS = [("external-server", _ext.app), ("internal-server", _int.app)]
 
@@ -30,6 +34,7 @@ def _export_app(name: str, app: _fapi.FastAPI, output_dir_path: _pl.Path) -> Non
         openapi_version=app.openapi_version,
         description=app.description,
         routes=app.routes,
+        
     )
 
     output_file_path = output_dir_path / f"{name}-openapi.json"

@@ -8,9 +8,13 @@ from alembic import context
 import alembic_postgresql_enum
 
 from sqlmodel import SQLModel
-from resultes_server.sqlmodel_models import *
 
-import resultes_server.config as server_config
+import sys
+import pathlib as pl
+sys.path.insert(0, str(pl.Path(__file__).parents[1] / "src"))
+
+from sqlmodel_models import *
+import config as server_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

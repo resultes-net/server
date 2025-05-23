@@ -7,10 +7,10 @@ import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import uvicorn as _uc
 
-import resultes_server.config as _config
-import resultes_server.simulations as _sims
-import resultes_server.sqlmodel_models.simulations.variation as _var
-import resultes_server.variations as _vars
+import config as _config
+import simulations as _sims
+import sqlmodel_models.simulations.variation as _var
+import variations as _vars
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 

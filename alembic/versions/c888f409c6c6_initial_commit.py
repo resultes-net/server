@@ -11,7 +11,6 @@ from alembic import op
 import sqlalchemy as sa
 import sqlmodel
 
-import resultes_server
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
@@ -38,11 +37,11 @@ def upgrade() -> None:
     )
     op.create_table('simulation',
     sa.Column('type', postgresql.ENUM('TTES', 'PTES', 'BTES', name='type', create_type=False), nullable=False),
-    sa.Column('parameters', resultes_server.type_decorators.PydanticJsonTypeDecorator(), nullable=False),
+    sa.Column('parameters', type_decorators.PydanticJsonTypeDecorator(), nullable=False),
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=False),
     sa.Column('created_on', sa.DateTime(), nullable=False),
     sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True),
-    sa.Column('object_storage_url', resultes_server.database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
+    sa.Column('object_storage_url', database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
     sa.Column('state', postgresql.ENUM('WAITING_FOR_VARIATIONS_CREATION', 'WAITING_FOR_VARIATION_RUNS', 'WAITING_FOR_CROSS_VARIATION_PROCESSING', 'DONE', name='simulationstate', create_type=False), nullable=False),
     sa.Column('state_changed_on', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
@@ -54,9 +53,9 @@ def upgrade() -> None:
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=False),
     sa.Column('created_on', sa.DateTime(), nullable=False),
     sa.Column('simulation_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True),
-    sa.Column('object_storage_url', resultes_server.database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
-    sa.Column('relative_deck_file_path', resultes_server.database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
-    sa.Column('relative_process_script_path', resultes_server.database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
+    sa.Column('object_storage_url', database_utils.helpers.NullableHttpUrlTypeDecorator(length=1024), nullable=True),
+    sa.Column('relative_deck_file_path', database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
+    sa.Column('relative_process_script_path', database_utils.helpers.PureWindowsPathTypeDecorator(length=1024), nullable=False),
     sa.Column('state', postgresql.ENUM('WAITING', 'RUNNING', 'DONE', name='variationstate', create_type=False), nullable=False),
     sa.ForeignKeyConstraint(['simulation_id'], ['simulation.id'], ),
     sa.PrimaryKeyConstraint('id'),

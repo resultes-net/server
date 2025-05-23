@@ -1,10 +1,10 @@
 import collections.abc as _cabc
 import itertools as _it
 
+import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 
-import resultes_server.sqlmodel_models.simulations.simulation as _sim
-import resultes_pydantic_models.simulations.simulation as _psim
+import sqlmodel_models.simulations.simulation as _sim
 
 
 def get_simulations_waiting_for_variations_creation_by_user_id(
