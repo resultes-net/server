@@ -1,0 +1,5 @@
+-c constraints.txt
+
+-r migrate-3rd-party.in
+
+file:pydantic-models
