@@ -1,10 +1,12 @@
 import datetime as _dt
 import logging as _log
+import typing as _tp
 
 import fastapi as _fapi
 import jwt as _jwt
 import passlib.context as _plctx
 import pydantic as _pyd
+import resultes_pydantic_models.common as _rpmc
 import sqlmodel as _sqlm
 
 import sqlmodel_models.user as _mu
@@ -21,9 +23,22 @@ _ACCESS_TOKEN_EXPIRE_MINUTES = 30
 _PWD_CONTEXT = _plctx.CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+def _is_timezone_aware_in_future(datetime: _dt.datetime) -> bool:
+    if datetime.tzinfo is None:
+        return False
+
+    return datetime > _rpmc.utc_now()
+
+
+AwareFutureDateTime = _tp.Annotated[
+    _dt.datetime, _pyd.AfterValidator(_is_timezone_aware_in_future)
+]
+
+
 class Token(_pyd.BaseModel):
-    access_token: str
     token_type: str
+    valid_until: AwareFutureDateTime
+    access_token: str
 
 
 def get_hashed_password(plain_password: str) -> str:
@@ -69,8 +84,7 @@ def create_token(user_name: str, plain_password: str, session: _sqlm.Session) ->
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = _create_token(user.user_name)
-    return Token(access_token=access_token, token_type="bearer")
+    return _create_token(user.user_name)
 
 
 def authenticate_user(
@@ -88,10 +102,14 @@ def _verify_password(plain_password: str, hashed_password: str) -> bool:
     return _PWD_CONTEXT.verify(plain_password, hashed_password)
 
 
-def _create_token(user_name: str) -> str:
+def _create_token(user_name: str) -> Token:
     expires = _dt.datetime.now(_dt.UTC) + _dt.timedelta(
         minutes=_ACCESS_TOKEN_EXPIRE_MINUTES
     )
     data = dict(sub=user_name, exp=expires)
-    token = _jwt.encode(data, _SECRET_KEY, algorithm=_ALGORITHM)
+
+    access_token = _jwt.encode(data, _SECRET_KEY, algorithm=_ALGORITHM)
+
+    token = Token(token_type="bearer", valid_until=expires, access_token=access_token)
+
     return token
