@@ -23,11 +23,14 @@ _ACCESS_TOKEN_EXPIRE_MINUTES = 30
 _PWD_CONTEXT = _plctx.CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def _is_timezone_aware_in_future(datetime: _dt.datetime) -> bool:
+def _is_timezone_aware_in_future(datetime: _dt.datetime) -> _dt.datetime:
     if datetime.tzinfo is None:
-        return False
+        raise ValueError("Datetime must have an explicit time zone.", datetime)
 
-    return datetime > _rpmc.utc_now()
+    if datetime <= _rpmc.utc_now():
+        raise ValueError("Datetime must be in the future.", datetime)
+
+    return datetime
 
 
 AwareFutureDateTime = _tp.Annotated[
