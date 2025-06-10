@@ -1,14 +1,15 @@
 import fastapi as _fapi
 import resultes_pydantic_models.user as _pu
 import sqlmodel as _sqlm
+import sqlmodel.ext.asyncio.session as _sqlmas
 
 import auth as _auth
 import sqlmodel_models.user as _mu
 
 
-def get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:
+async def get_user(user_name: str, session: _sqlmas.AsyncSession) -> _mu.User | None:
     statement = _sqlm.select(_mu.User).where(_mu.User.user_name == user_name)
-    results = session.exec(statement)
+    results = await session.exec(statement)
     user = results.one_or_none()
     return user
 
@@ -16,14 +17,16 @@ def get_user(user_name: str, session: _sqlm.Session) -> _mu.User | None:
 _REGISTRATION_KEY = "579e57a617ec"
 
 
-def create_user(user_create: _pu.UserCreate, session: _sqlm.Session) -> _mu.User:
+async def create_user(
+    user_create: _pu.UserCreate, session: _sqlmas.AsyncSession
+) -> _mu.User:
     if user_create.registration_key != _REGISTRATION_KEY:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_403_FORBIDDEN,
             detail="Registration key is invalid.",
         )
 
-    user = get_user(user_create.user_name, session)
+    user = await get_user(user_create.user_name, session)
     if user:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_409_CONFLICT,
@@ -41,15 +44,15 @@ def create_user(user_create: _pu.UserCreate, session: _sqlm.Session) -> _mu.User
     )
 
     session.add(user)
-    session.commit()
+    await session.commit()
 
     return user
 
 
-def modify_user(
-    user_modfiy: _pu.UserModify, user: _mu.User, session: _sqlm.Session
+async def modify_user(
+    user_modfiy: _pu.UserModify, user: _mu.User, session: _sqlmas.AsyncSession
 ) -> _pu.UserRead:
-    user_or_none = _auth.authenticate_user(
+    user_or_none = await _auth.authenticate_user(
         user.user_name, user_modfiy.old_plain_password, session
     )
     if not user_or_none:
@@ -63,6 +66,6 @@ def modify_user(
 
     user.hashed_password = new_hashed_password
 
-    session.commit()
+    await session.commit()
 
     return user

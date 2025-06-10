@@ -4,7 +4,8 @@ import typing as _tp
 
 import fastapi as _fapi
 import resultes_pydantic_models.simulations.simulation as _psim
-import sqlmodel as _sqlm
+import sqlalchemy.ext.asyncio.engine as _sqlae
+import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
 
 import config as _config
@@ -15,15 +16,15 @@ import variations as _vars
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 
-engine = _sqlm.create_engine(_config.DB_CONNECTION_STRING, echo=True)
+engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
 
 
-def get_session() -> _tp.Iterable[_sqlm.Session]:
-    with _sqlm.Session(engine) as session:
+async def get_session() -> _cabc.AsyncIterable[_sqlmas.AsyncSession]:
+    async with _sqlmas.AsyncSession(engine) as session:
         yield session
 
 
-SessionDep = _tp.Annotated[_sqlm.Session, _fapi.Depends(get_session)]
+SessionDep = _tp.Annotated[_sqlmas.AsyncSession, _fapi.Depends(get_session)]
 
 
 app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
@@ -34,14 +35,16 @@ async def get_waiting_variations_by_user_id(
     state: _tp.Literal["waiting"],
     session: SessionDep,
 ) -> _cabc.Mapping[str, _cabc.Sequence[_var.Variation]]:
-    return _vars.get_waiting_variations_by_user_id(session)
+    return await _vars.get_waiting_variations_by_user_id(session)
 
 
 @app.get("/simulations")
 async def get_simulations_waiting_for_variations_creation_by_user_id(
     state: _tp.Literal["waiting-for-variations-creation"], session: SessionDep
 ) -> _cabc.Mapping[str, _cabc.Sequence[_psim.Simulation]]:
-    return _sims.get_simulations_waiting_for_variations_creation_by_user_id(session)
+    return await _sims.get_simulations_waiting_for_variations_creation_by_user_id(
+        session
+    )
 
 
 if __name__ == "__main__":

@@ -1,13 +1,14 @@
 import collections.abc as _cabc
 
 import sqlmodel as _sqlm
+import sqlmodel.ext.asyncio.session as _sqlmas
 
 import sqlmodel_models.simulations as _sim
 import sqlmodel_models.simulations.variation as _var
 
 
-def get_waiting_variations_by_user_id(
-    session: _sqlm.Session,
+async def get_waiting_variations_by_user_id(
+    session: _sqlmas.AsyncSession,
 ) -> _cabc.Mapping[str, _cabc.Sequence[_var.Variation]]:
     query = (
         _sqlm.select(_sim.Simulation, _var.Variation)
@@ -15,7 +16,7 @@ def get_waiting_variations_by_user_id(
         .where(_var.Variation.state == _var.VariationState.WAITING)
     )
 
-    rows = session.exec(query)
+    rows = await session.exec(query)
 
     variations_and_user_id = [(v, s.user_id) for s, v in rows]
 

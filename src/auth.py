@@ -7,7 +7,7 @@ import jwt as _jwt
 import passlib.context as _plctx
 import pydantic as _pyd
 import resultes_pydantic_models.common as _rpmc
-import sqlmodel as _sqlm
+import sqlmodel.ext.asyncio.session as _sqlmas
 
 import sqlmodel_models.user as _mu
 import users as _users
@@ -48,7 +48,7 @@ def get_hashed_password(plain_password: str) -> str:
     return _PWD_CONTEXT.hash(plain_password)
 
 
-def get_current_user(token: str, session: _sqlm.Session) -> _mu.User:
+async def get_current_user(token: str, session: _sqlmas.AsyncSession) -> _mu.User:
     credentials_exception = _fapi.HTTPException(
         status_code=_fapi.status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -64,7 +64,7 @@ def get_current_user(token: str, session: _sqlm.Session) -> _mu.User:
     if user_name is None:
         raise credentials_exception
 
-    user = _users.get_user(user_name, session)
+    user = await _users.get_user(user_name, session)
     if user is None:
         raise credentials_exception
 
@@ -79,8 +79,10 @@ def get_current_active_user(
     return current_user
 
 
-def create_token(user_name: str, plain_password: str, session: _sqlm.Session) -> Token:
-    user = authenticate_user(user_name, plain_password, session)
+async def create_token(
+    user_name: str, plain_password: str, session: _sqlmas.AsyncSession
+) -> Token:
+    user = await authenticate_user(user_name, plain_password, session)
     if not user:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_401_UNAUTHORIZED,
@@ -90,10 +92,10 @@ def create_token(user_name: str, plain_password: str, session: _sqlm.Session) ->
     return _create_token(user.user_name)
 
 
-def authenticate_user(
-    user_name: str, plain_password: str, session: _sqlm.Session
+async def authenticate_user(
+    user_name: str, plain_password: str, session: _sqlmas.AsyncSession
 ) -> _mu.User | None:
-    user = _users.get_user(user_name, session)
+    user = await _users.get_user(user_name, session)
     if not user:
         return None
     if not _verify_password(plain_password, user.hashed_password):

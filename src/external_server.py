@@ -6,7 +6,8 @@ import fastapi as _fapi
 import fastapi.security as _fsec
 import resultes_pydantic_models.simulations.parameters.ttes as _tapi
 import resultes_pydantic_models.user as _pu
-import sqlmodel as _sqlm
+import sqlalchemy.ext.asyncio.engine as _sqlae
+import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
 
 import auth as _auth
@@ -18,23 +19,23 @@ import users as _users
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 
-engine = _sqlm.create_engine(_config.DB_CONNECTION_STRING, echo=True)
+engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
 
 
-def get_session() -> _tp.Iterable[_sqlm.Session]:
-    with _sqlm.Session(engine) as session:
+async def get_session() -> _tp.AsyncIterable[_sqlmas.AsyncSession]:
+    async with _sqlmas.AsyncSession(engine) as session:
         yield session
 
 
-SessionDep = _tp.Annotated[_sqlm.Session, _fapi.Depends(get_session)]
+SessionDep = _tp.Annotated[_sqlmas.AsyncSession, _fapi.Depends(get_session)]
 
 PASSWORD_BEARER = _fsec.OAuth2PasswordBearer(tokenUrl="token")
 
 TokenDep = _tp.Annotated[str, _fapi.Depends(PASSWORD_BEARER)]
 
 
-def get_current_user(token: TokenDep, session: SessionDep) -> _mu.User:
-    return _auth.get_current_user(token, session)
+async def get_current_user(token: TokenDep, session: SessionDep) -> _mu.User:
+    return await _auth.get_current_user(token, session)
 
 
 UserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_user)]
@@ -55,20 +56,20 @@ async def create_token(
     form_data: _tp.Annotated[_fsec.OAuth2PasswordRequestForm, _fapi.Depends()],
     session: SessionDep,
 ) -> _auth.Token:
-    token = _auth.create_token(form_data.username, form_data.password, session)
+    token = await _auth.create_token(form_data.username, form_data.password, session)
     return token
 
 
 @app.post("/user")
 async def create_user(user_create: _pu.UserCreate, session: SessionDep) -> _pu.UserRead:
-    return _users.create_user(user_create, session)
+    return await _users.create_user(user_create, session)
 
 
 @app.put("/user")
 async def modify_user(
     user_modify: _pu.UserModify, session: SessionDep, user: ActiveUserDep
 ) -> _pu.UserRead:
-    return _users.modify_user(user_modify, user, session)
+    return await _users.modify_user(user_modify, user, session)
 
 
 @app.post("/simulations")
@@ -80,7 +81,7 @@ async def create_and_run_new_simulation(
         parameters=parameters,
     )
     session.add_all([simulation])
-    session.commit()
+    await session.commit()
     return {"href": f"/simulations/{simulation.id}"}
 
 
