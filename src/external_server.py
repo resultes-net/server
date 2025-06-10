@@ -1,3 +1,4 @@
+import collections.abc as _cabc
 import logging as _log
 import os as _os
 import typing as _tp
@@ -12,6 +13,7 @@ import uvicorn as _uc
 
 import auth as _auth
 import config as _config
+import database_utils.helpers as _dbh
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _mu
 import users as _users
@@ -19,11 +21,15 @@ import users as _users
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 
-engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
+def create_engine():
+    return _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
 
 
-async def get_session() -> _tp.AsyncIterable[_sqlmas.AsyncSession]:
-    async with _sqlmas.AsyncSession(engine) as session:
+engine = create_engine()
+
+
+async def get_session() -> _cabc.AsyncIterable[_sqlmas.AsyncSession]:
+    async with _dbh.create_session(engine) as session:
         yield session
 
 
@@ -80,9 +86,11 @@ async def create_and_run_new_simulation(
         user=user,
         parameters=parameters,
     )
+
     session.add_all([simulation])
     await session.commit()
-    return {"href": f"/simulations/{simulation.id}"}
+
+    return {"href": f"/simulations/{simulation.user_id}"}
 
 
 if __name__ == "__main__":

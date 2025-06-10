@@ -1,6 +1,7 @@
 import collections.abc as _cabc
 import itertools as _it
 
+import resultes_pydantic_models.common as _pcom
 import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -23,3 +24,20 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
     simulations_by_user_id = {k: list(g) for k, g in _it.groupby(rows, key=get_user_id)}
 
     return simulations_by_user_id
+
+
+async def set_simulation_state(
+    simulation_id: str, state: _psim.SimulationState, session: _sqlmas.AsyncSession
+) -> _psim.UpdateSimulation:
+    query = _sqlm.select(_sim.Simulation).where(_sim.Simulation.id == simulation_id)
+
+    rows = await session.exec(query)
+
+    simulation = rows.one()
+
+    simulation.state = state
+    simulation.state_changed_on = _pcom.utc_now()
+
+    await session.commit()
+
+    return simulation

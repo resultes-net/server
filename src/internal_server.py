@@ -9,6 +9,7 @@ import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
 
 import config as _config
+import database_utils.helpers as _dbh
 import simulations as _sims
 import sqlmodel_models.simulations.variation as _var
 import variations as _vars
@@ -20,7 +21,7 @@ engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
 
 
 async def get_session() -> _cabc.AsyncIterable[_sqlmas.AsyncSession]:
-    async with _sqlmas.AsyncSession(engine) as session:
+    async with _dbh.create_session(engine) as session:
         yield session
 
 
@@ -45,6 +46,13 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
     return await _sims.get_simulations_waiting_for_variations_creation_by_user_id(
         session
     )
+
+
+@app.patch("/simulations/{simulation_id}")
+async def set_simulation_state(
+    simulation_id: str, state: _psim.SimulationState, session: SessionDep
+) -> _psim.UpdateSimulation:
+    return await _sims.set_simulation_state(simulation_id, state, session)
 
 
 if __name__ == "__main__":

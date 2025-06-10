@@ -21,10 +21,10 @@ class VariationState(_enum.Enum):
 
 class Variation(_sqlm.SQLModel, table=True):
     id: str | None = _dbh.ID_FIELD
-    created_on: _pcom.AwarePastDatetime = _dbh.UTC_NOW_FIELD
+    created_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
-    simulation: "Simulation" = _sqlm.Relationship(back_populates="variations")
+    simulation: "Simulation" = _dbh.create_eager_relationship("variations")
 
     object_storage_url: _pyd.HttpUrl = _dbh.HTTP_URL_FIELD
     relative_deck_file_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD

@@ -11,5 +11,5 @@ if _tp.TYPE_CHECKING:
 
 class User(_sqlm.SQLModel, _puser.UserRead, table=True):
     hashed_password: str
-    simulations: list["Simulation"] = _sqlm.Relationship(back_populates="user")
+    simulations: list["Simulation"] = _dbh.create_eager_relationship("user")
     id: str | None = _dbh.ID_FIELD
