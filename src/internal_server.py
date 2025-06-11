@@ -49,10 +49,10 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
 
 
 @app.patch("/simulations/{simulation_id}")
-async def set_simulation_state(
-    simulation_id: str, state: _psim.SimulationState, session: SessionDep
+async def update_simulation(
+    simulation_id: str, update_simulation: _psim.UpdateSimulation, session: SessionDep
 ) -> _psim.UpdateSimulation:
-    return await _sims.set_simulation_state(simulation_id, state, session)
+    return await _sims.update_simulation(simulation_id, update_simulation, session)
 
 
 if __name__ == "__main__":

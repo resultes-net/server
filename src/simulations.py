@@ -26,8 +26,10 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
     return simulations_by_user_id
 
 
-async def set_simulation_state(
-    simulation_id: str, state: _psim.SimulationState, session: _sqlmas.AsyncSession
+async def update_simulation(
+    simulation_id: str,
+    update_simulation: _psim.UpdateSimulation,
+    session: _sqlmas.AsyncSession,
 ) -> _psim.UpdateSimulation:
     query = _sqlm.select(_sim.Simulation).where(_sim.Simulation.id == simulation_id)
 
@@ -35,7 +37,10 @@ async def set_simulation_state(
 
     simulation = rows.one()
 
-    simulation.state = state
+    update_dict = update_simulation.model_dump()
+    for key, value in update_dict.items():
+        setattr(simulation, key, value)
+
     simulation.state_changed_on = _pcom.utc_now()
 
     await session.commit()
