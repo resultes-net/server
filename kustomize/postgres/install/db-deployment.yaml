@@ -23,4 +23,11 @@ spec:
           ports:
             - containerPort: 5432
               protocol: TCP
+          volumeMounts:
+            - name: db-persistent-volume
+              mountPath: /var/lib/postgresql
       restartPolicy: Always
+      volumes:
+      - name: db-persistent-volume
+        persistentVolumeClaim:
+          claimName: db-persistent-volume-claim

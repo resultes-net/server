@@ -8,3 +8,4 @@ resources:
   - adminer-service.yaml
   - db-deployment.yaml
   - db-service.yaml
+  - db-persistent-volume-claim.yaml
