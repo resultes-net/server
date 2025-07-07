@@ -1,6 +1,7 @@
 import collections.abc as _cabc
 import itertools as _it
 
+import fastapi as _fapi
 import resultes_pydantic_models.common as _pcom
 import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
@@ -26,23 +27,26 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
     return simulations_by_user_id
 
 
-async def update_simulation(
+async def update_simulation_state(
     simulation_id: str,
-    update_simulation: _psim.UpdateSimulation,
+    new_state: _psim.SimulationState,
     session: _sqlmas.AsyncSession,
-) -> _psim.UpdateSimulation:
+) -> _psim.SimulationState:
     query = _sqlm.select(_sim.Simulation).where(_sim.Simulation.id == simulation_id)
 
     rows = await session.exec(query)
 
-    simulation = rows.one()
+    simulation = rows.one_or_none()
 
-    update_dict = update_simulation.model_dump()
-    for key, value in update_dict.items():
-        setattr(simulation, key, value)
+    if not simulation:
+        raise _fapi.HTTPException(
+            status_code=_fapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No simulation with id {simulation_id} found.",
+        )
 
+    simulation.state = new_state
     simulation.state_changed_on = _pcom.utc_now()
 
     await session.commit()
 
-    return simulation
+    return simulation.state

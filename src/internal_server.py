@@ -4,6 +4,7 @@ import typing as _tp
 
 import fastapi as _fapi
 import resultes_pydantic_models.simulations.simulation as _psim
+import resultes_pydantic_models.simulations.variation as _pvar
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
@@ -48,11 +49,18 @@ async def get_simulations_waiting_for_variations_creation_by_user_id(
     )
 
 
-@app.patch("/simulations/{simulation_id}")
-async def update_simulation(
-    simulation_id: str, update_simulation: _psim.UpdateSimulation, session: SessionDep
-) -> _psim.UpdateSimulation:
-    return await _sims.update_simulation(simulation_id, update_simulation, session)
+@app.put("/simulations/{simulation_id}/state")
+async def update_simulation_state(
+    simulation_id: str, new_state: _psim.SimulationState, session: SessionDep
+) -> _psim.SimulationState:
+    return await _sims.update_simulation_state(simulation_id, new_state, session)
+
+
+@app.post("/simulations/{simulation_id}/variations")
+async def create_variation(
+    simulation_id: str, variation: _pvar.CreateVariation, session: SessionDep
+) -> _pvar.Variation:
+    return await _vars.create_variation(simulation_id, variation, session)
 
 
 if __name__ == "__main__":

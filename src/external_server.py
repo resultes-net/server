@@ -87,7 +87,7 @@ async def create_and_run_new_simulation(
         parameters=parameters,
     )
 
-    session.add_all([simulation])
+    session.add(simulation)
     await session.commit()
 
     return {"href": f"/simulations/{simulation.user_id}"}
