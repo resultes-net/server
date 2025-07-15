@@ -16,7 +16,7 @@ async def get_waiting_variations_by_user_id(
     query = (
         _sqlm.select(_sim.Simulation, _var.Variation)
         .join(_sim.Simulation)
-        .where(_var.Variation.state == _pvar.WAITING)
+        .where(_var.Variation.state == _pvar.VariationState.WAITING)
     )
 
     rows = await session.exec(query)

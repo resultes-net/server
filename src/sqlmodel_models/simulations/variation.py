@@ -1,7 +1,6 @@
 import pathlib as _pl
 import typing as _tp
 
-import pydantic as _pyd
 import resultes_pydantic_models.common as _pcom
 import resultes_pydantic_models.simulations.variation as _pydvar
 import sqlmodel as _sqlm
@@ -19,6 +18,4 @@ class Variation(_pydvar.Variation, _sqlm.SQLModel, table=True):
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
     simulation: "Simulation" = _dbh.create_eager_relationship("variations")
 
-    object_storage_url: _pyd.HttpUrl = _dbh.HTTP_URL_FIELD
     relative_deck_file_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
-    relative_process_script_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
