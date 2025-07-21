@@ -58,4 +58,7 @@ async def create_variation(
     create_variation_dict = variation.model_dump()
     variation = _var.Variation(simulation_id=simulation_id, **create_variation_dict)
     session.add(variation)
+    
+    await session.commit()
+    
     return variation
