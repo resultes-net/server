@@ -1,6 +1,7 @@
 import collections.abc as _cabc
 
 import fastapi as _fapi
+import resultes_pydantic_models.server as _psrv
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
 import sqlmodel as _sqlm
@@ -10,30 +11,50 @@ import sqlmodel_models.simulations as _sim
 import sqlmodel_models.simulations.variation as _var
 
 
-async def get_waiting_variations_by_user_id(
+async def get_waiting_variations(
     session: _sqlmas.AsyncSession,
-) -> _cabc.Mapping[str, _cabc.Sequence[_var.Variation]]:
+) -> _psrv.WaitingVariations:
+    simulation_ids_subquery = _sqlm.select(_sim.Variation.simulation_id).where(
+        _sim.Variation.state == _pvar.VariationState.WAITING
+    )
+
     query = (
-        _sqlm.select(_sim.Simulation, _var.Variation)
-        .join(_sim.Simulation)
-        .where(_var.Variation.state == _pvar.VariationState.WAITING)
+        _sqlm.select(_sim.Simulation, _sim.Variation)
+        .join(_sim.Variation)
+        .where(_sqlm.col(_sim.Simulation.id).in_(simulation_ids_subquery))
     )
 
     rows = await session.exec(query)
 
-    variations_and_user_id = [(v, s.user_id) for s, v in rows]
+    simulations = list[_sim.Simulation]()
+    waiting_variations = list[_sim.Variation]()
+    other_variations = list[_sim.Variation]()
 
-    variations_by_user_id = dict[str, list[_var.Variation]]()
-    for variation, user_id in variations_and_user_id:
-        variations = variations_by_user_id.get(user_id)
+    for simulation, variation in rows:
+        simulations.append(simulation)
 
-        if not variations:
-            variations = []
-            variations_by_user_id[user_id] = variations
+        if variation.state == _pvar.VariationState.WAITING:
+            waiting_variations.append(variation)
+        else:
+            other_variations.append(variation)
 
-        variations.append(variation)
+    associated_simulations = _remove_duplicates(simulations)
 
-    return variations_by_user_id
+    result = _psrv.WaitingVariations(
+        waiting_variations=waiting_variations,
+        associated_simulations=associated_simulations,
+        other_variations=other_variations,
+    )
+
+    return result
+
+
+def _remove_duplicates(
+    simulations: _cabc.Sequence[_sim.Simulation],
+) -> _cabc.Sequence[_sim.Simulation]:
+    simulations_by_id = {s.id: s for s in simulations}
+    unique_simulations = simulations_by_id.values()
+    return list(unique_simulations)
 
 
 async def create_variation(
@@ -58,7 +79,7 @@ async def create_variation(
     create_variation_dict = variation.model_dump()
     variation = _var.Variation(simulation_id=simulation_id, **create_variation_dict)
     session.add(variation)
-    
+
     await session.commit()
-    
+
     return variation
