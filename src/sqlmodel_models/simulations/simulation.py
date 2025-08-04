@@ -14,7 +14,7 @@ if _tp.TYPE_CHECKING:
     from sqlmodel_models.user import User
 
 
-class Simulation(_psim.Simulation, _sqlm.SQLModel, table=True):
+class Simulation(_psim.SimulationBase, _sqlm.SQLModel, table=True):
     parameters: _pttes.TtesParameters = _td.TTES_PARAMETERS_FIELD
 
     id: str | None = _dbh.ID_FIELD

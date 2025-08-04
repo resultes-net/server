@@ -10,7 +10,7 @@ if not DB_HOST_NAME:
     DB_HOST_NAME = f"{host_name}.local"
     print(f"Accessing Windows localhost via '{DB_HOST_NAME}'.")
 
-DB_PORT = _os.environ.get("DB_PORT", "8432")
+DB_PORT = _os.environ.get("DB_PORT", "5432")
 
 DB_CONNECTION_STRING = (
     f"postgresql+psycopg://postgres:postgres@{DB_HOST_NAME}:{DB_PORT}/resultes"
