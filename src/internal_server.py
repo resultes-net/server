@@ -62,6 +62,13 @@ async def create_variation(
     return await _vars.create_variation(simulation_id, variation, session)
 
 
+@app.put("/variations/{variation_id}/state")
+async def update_variation_state(
+    variation_id: str, new_state: _pvar.VariationState, session: SessionDep
+) -> _pvar.VariationState:
+    return await _vars.update_variation_state(variation_id, new_state, session)
+
+
 if __name__ == "__main__":
     _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
     _log.info("Starting server...")

@@ -7,6 +7,7 @@ import resultes_pydantic_models.simulations.variation as _pvar
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
+import query_helpers as _qh
 import sqlmodel_models.simulations as _sim
 import sqlmodel_models.simulations.variation as _var
 
@@ -26,17 +27,17 @@ async def get_waiting_variations(
 
     rows = await session.exec(query)
 
-    simulations = list[_sim.Simulation]()
-    waiting_variations = list[_sim.Variation]()
-    other_variations = list[_sim.Variation]()
+    simulations = list[_psim.Simulation]()
+    waiting_variations = list[_pvar.Variation]()
+    other_variations = list[_pvar.Variation]()
 
     for simulation, variation in rows:
-        simulations.append(simulation)
+        simulations.append(simulation.to_model_simulation())
 
         if variation.state == _pvar.VariationState.WAITING:
-            waiting_variations.append(variation)
+            waiting_variations.append(variation.to_model_variation())
         else:
-            other_variations.append(variation)
+            other_variations.append(variation.to_model_variation())
 
     associated_simulations = _remove_duplicates(simulations)
 
@@ -50,8 +51,8 @@ async def get_waiting_variations(
 
 
 def _remove_duplicates(
-    simulations: _cabc.Sequence[_sim.Simulation],
-) -> _cabc.Sequence[_sim.Simulation]:
+    simulations: _cabc.Sequence[_psim.Simulation],
+) -> _cabc.Sequence[_psim.Simulation]:
     simulations_by_id = {s.id: s for s in simulations}
     unique_simulations = simulations_by_id.values()
     return list(unique_simulations)
@@ -82,4 +83,13 @@ async def create_variation(
 
     await session.commit()
 
-    return variation
+    return variation.to_model_variation()
+
+
+async def update_variation_state(
+    variation_id: str,
+    new_state: _pvar.VariationState,
+    session: _sqlmas.AsyncSession,
+) -> _pvar.VariationState:
+    await _qh.set_state(_var.Variation, variation_id, new_state, session)
+    return new_state

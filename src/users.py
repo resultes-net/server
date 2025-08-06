@@ -68,4 +68,4 @@ async def modify_user(
 
     await session.commit()
 
-    return user
+    return user.to_model_user()
