@@ -17,16 +17,17 @@ if _tp.TYPE_CHECKING:
 class Simulation(
     _psim.SimulationBase, _smb.SQLModelWithIDAndState[_psim.SimulationState], table=True
 ):
-    parameters: _pttes.TtesParameters = _td.TTES_PARAMETERS_FIELD
-
+    id: str | None = _dbh.ID_FIELD
+    
     created_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
+    state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
+
+    parameters: _pttes.TtesParameters = _td.TTES_PARAMETERS_FIELD
 
     user_id: str = _dbh.create_id_field(foreign_key="user.id")
     user: "User" = _dbh.create_eager_relationship("simulations")
 
     object_storage_url: _pyd.HttpUrl | None = _dbh.HTTP_URL_FIELD
-
-    state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
     variations: list[_var.Variation] = _dbh.create_eager_relationship("simulation")
 

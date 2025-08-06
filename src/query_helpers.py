@@ -2,6 +2,7 @@ import collections.abc as _cabc
 import typing as _tp
 
 import fastapi as _fapi
+import resultes_pydantic_models.common as _pcom
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
@@ -44,4 +45,5 @@ async def set_state[S](
 ) -> None:
     instance = await get_single(clazz, id, session)
     instance.state = state
+    instance.state_changed_on = _pcom.utc_now()
     await session.commit()
