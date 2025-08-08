@@ -22,7 +22,7 @@ class Variation(
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
     simulation: "Simulation" = _dbh.create_eager_relationship("variations")
 
-    relative_deck_file_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
+    relative_deck_file_containing_dir_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
 
     def to_model_variation(self) -> _pvar.Variation:
         if not self.id:
@@ -34,5 +34,5 @@ class Variation(
             state=self.state,
             state_changed_on=self.state_changed_on,
             simulation_id=self.simulation_id,
-            relative_deck_file_path=self.relative_deck_file_path,
+            relative_deck_file_containing_dir_path=self.relative_deck_file_containing_dir_path,
         )
