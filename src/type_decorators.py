@@ -18,4 +18,4 @@ class PydanticJsonTypeDecorator(_sqlt.TypeDecorator):
         return _pttes.TtesParameters(**value)
 
 
-TTES_PARAMETERS_FIELD = _sqlm.Field(sa_type=PydanticJsonTypeDecorator)
+PARAMETERS_FIELD = _sqlm.Field(sa_type=PydanticJsonTypeDecorator, discriminator="type")

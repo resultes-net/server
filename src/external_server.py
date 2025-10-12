@@ -5,7 +5,8 @@ import typing as _tp
 
 import fastapi as _fapi
 import fastapi.security as _fsec
-import resultes_pydantic_models.simulations.parameters.ttes as _tapi
+import resultes_pydantic_models.simulations.parameters.ttes as _ttes
+import resultes_pydantic_models.simulations.parameters.ptes as _pptes
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -78,9 +79,14 @@ async def modify_user(
     return await _users.modify_user(user_modify, user, session)
 
 
+type Parameters = _ttes.TtesParameter | _pptes.PtesParameters
+
+
 @app.post("/simulations")
 async def create_and_run_new_simulation(
-    parameters: _tapi.TtesParameters, session: SessionDep, user: ActiveUserDep
+    parameters: _tp.Annotated[_ttes.TtesParameters, _fapi.Body(discriminator="type")],
+    session: SessionDep,
+    user: ActiveUserDep,
 ) -> dict:
     simulation = _sim.Simulation(
         user=user,
@@ -90,7 +96,7 @@ async def create_and_run_new_simulation(
     session.add(simulation)
     await session.commit()
 
-    return {"href": f"/simulations/{simulation.user_id}"}
+    return {"href": f"/simulations/{simulation.id}"}
 
 
 if __name__ == "__main__":

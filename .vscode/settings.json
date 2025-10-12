@@ -4,5 +4,12 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.fixAll": ["source.unusedImports", "source.convertImportFormat"]
+    "python.analysis.fixAll": [
+        "source.unusedImports",
+        "source.convertImportFormat"
+    ],
+    "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
+    "python.analysis.typeEvaluation.disableBytesTypePromotions": true,
+    "python.analysis.typeEvaluation.deprecateTypingAliases": true,
+    "python.analysis.diagnosticMode": "workspace"
 }
