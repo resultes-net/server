@@ -79,12 +79,12 @@ async def modify_user(
     return await _users.modify_user(user_modify, user, session)
 
 
-type Parameters = _ttes.TtesParameter | _pptes.PtesParameters
+type Parameters = _ttes.TtesParameters | _pptes.PtesParameters
 
 
 @app.post("/simulations")
 async def create_and_run_new_simulation(
-    parameters: _tp.Annotated[_ttes.TtesParameters, _fapi.Body(discriminator="type")],
+    parameters: _tp.Annotated[Parameters, _fapi.Body(discriminator="type")],
     session: SessionDep,
     user: ActiveUserDep,
 ) -> dict:
