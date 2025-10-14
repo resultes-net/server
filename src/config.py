@@ -1,6 +1,6 @@
 import os as _os
 
-DB_HOST_NAME = _os.environ.get("DB_HOST_NAME") or "localhost"
+DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
 
 DB_PORT = _os.environ.get("DB_PORT", "5432")
 
