@@ -3,6 +3,7 @@ FROM python:3.12-slim-bookworm AS pip-dependencies
 WORKDIR /app
 
 COPY docker-utils docker-utils
+COPY openstack-utils openstack-utils
 COPY requirements/ requirements/
 
 RUN docker-utils/pip-install.sh --upgrade wheel uv pip
