@@ -3,3 +3,4 @@
 -r dev-3rd-party.in
 
 -e pydantic-models
+-e openstack-utils

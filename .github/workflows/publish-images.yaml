@@ -33,6 +33,7 @@ jobs:
             docker-utils
             openapi-schema
             pydantic-models
+            openstack-utils
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

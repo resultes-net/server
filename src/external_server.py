@@ -1,12 +1,18 @@
 import collections.abc as _cabc
+import concurrent.futures as _cf
+import contextlib as _ctx
 import logging as _log
 import os as _os
+import pathlib as _pl
 import typing as _tp
 
 import fastapi as _fapi
+import fastapi.responses as _fresp
 import fastapi.security as _fsec
-import resultes_pydantic_models.simulations.parameters.ttes as _ttes
+import resultes_openstack_utils.swift_multithreaded as _sm
+import resultes_pydantic_models.runner as _pr
 import resultes_pydantic_models.simulations.parameters.ptes as _pptes
+import resultes_pydantic_models.simulations.parameters.ttes as _ttes
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -20,6 +26,12 @@ import sqlmodel_models.user as _mu
 import users as _users
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
+
+CLOUDS_YAML_FILE_PATH = _pl.Path(
+    _pl.Path(__file__).parents[1] / "config" / "clouds.yaml"
+)
+
+N_MAX_SWIFT_WORKERS = 16
 
 
 def create_engine():
@@ -55,7 +67,17 @@ def get_current_active_user(current_user: UserDep) -> _mu.User:
 ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 
-app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
+@_ctx.asynccontextmanager
+async def lifespan(app: _fapi.FastAPI) -> _cabc.AsyncIterable[None]:
+    global swift
+    with _cf.ThreadPoolExecutor(N_MAX_SWIFT_WORKERS) as executor:
+        async with _sm.Swift(
+            CLOUDS_YAML_FILE_PATH, executor, N_MAX_SWIFT_WORKERS
+        ) as swift:
+            yield
+
+
+app = _fapi.FastAPI(root_path=_config.ROOT_PATH, lifespan=lifespan)
 
 
 @app.post("/token")
@@ -99,8 +121,36 @@ async def create_and_run_new_simulation(
     return {"href": f"/simulations/{simulation.id}"}
 
 
+@app.get("/variations/{variation_id}/results/{result_path:path}")
+async def get_variation_result(
+    variation_id: str,
+    result_path: str,
+    session: SessionDep,
+    user: ActiveUserDep,
+) -> _fresp.StreamingResponse:
+    # TODO: ensure the variation belongs to the user
+
+    media_type = "image/png" if result_path.endswith(".png") else None
+
+    read_coroutine = _read_variation_result(variation_id, result_path)
+
+    return _fresp.StreamingResponse(read_coroutine, media_type=media_type)
+
+
+async def _read_variation_result(
+    variation_id: str, result_path: str
+) -> _cabc.AsyncIterator[bytes]:
+    object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
+        container="resultes-results", path=f"results/{variation_id}/{result_path}"
+    )
+    chunks = swift.download_chunks(object_storage_input_file_path)
+
+    async for chunk in chunks:
+        yield chunk
+
+
 if __name__ == "__main__":
-    _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
+    _log.basicConfig(format=LOG_FORMAT, level=_log.DEBUG)
     _log.info("Starting server...")
     port = int(_os.environ.get("PORT", "8080"))
     _uc.run(app, host="0.0.0.0", port=port, log_config=None)
