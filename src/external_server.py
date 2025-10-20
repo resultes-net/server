@@ -150,7 +150,7 @@ async def _read_variation_result(
 
 
 if __name__ == "__main__":
-    _log.basicConfig(format=LOG_FORMAT, level=_log.DEBUG)
+    _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
     _log.info("Starting server...")
     port = int(_os.environ.get("PORT", "8080"))
     _uc.run(app, host="0.0.0.0", port=port, log_config=None)
