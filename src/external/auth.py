@@ -10,7 +10,7 @@ import resultes_pydantic_models.common as _rpmc
 import sqlmodel.ext.asyncio.session as _sqlmas
 
 import sqlmodel_models.user as _mu
-import users as _users
+import external.users as _users
 
 _LOGGER = _log.getLogger(__name__)
 

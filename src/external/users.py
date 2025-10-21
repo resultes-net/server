@@ -3,7 +3,7 @@ import resultes_pydantic_models.user as _pu
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
-import auth as _auth
+import external.auth as _auth
 import sqlmodel_models.user as _mu
 
 

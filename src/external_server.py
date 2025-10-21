@@ -13,17 +13,19 @@ import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.runner as _pr
 import resultes_pydantic_models.simulations.parameters.ptes as _pptes
 import resultes_pydantic_models.simulations.parameters.ttes as _ttes
+import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
 
-import auth as _auth
 import config as _config
 import database_utils.helpers as _dbh
+import external.auth as _auth
+import external.simulations as _sims
+import external.users as _users
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _mu
-import users as _users
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -96,7 +98,7 @@ async def create_user(user_create: _pu.UserCreate, session: SessionDep) -> _pu.U
 
 @app.put("/user")
 async def modify_user(
-    user_modify: _pu.UserModify, session: SessionDep, user: ActiveUserDep
+    user_modify: _pu.UserModify, user: ActiveUserDep, session: SessionDep
 ) -> _pu.UserRead:
     return await _users.modify_user(user_modify, user, session)
 
@@ -107,8 +109,8 @@ type Parameters = _ttes.TtesParameters | _pptes.PtesParameters
 @app.post("/simulations")
 async def create_and_run_new_simulation(
     parameters: _tp.Annotated[Parameters, _fapi.Body(discriminator="type")],
-    session: SessionDep,
     user: ActiveUserDep,
+    session: SessionDep,
 ) -> dict:
     simulation = _sim.Simulation(
         user=user,
@@ -121,12 +123,20 @@ async def create_and_run_new_simulation(
     return {"href": f"/simulations/{simulation.id}"}
 
 
+@app.get("/simulations")
+async def get_simulations(
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _cabc.Sequence[_psim.Simulation]:
+    return await _sims.get_simulations(user, session)
+
+
 @app.get("/variations/{variation_id}/results/{result_path:path}")
 async def get_variation_result(
     variation_id: str,
     result_path: str,
-    session: SessionDep,
     user: ActiveUserDep,
+    session: SessionDep,
 ) -> _fresp.StreamingResponse:
     # TODO: ensure the variation belongs to the user
 

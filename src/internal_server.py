@@ -12,8 +12,8 @@ import uvicorn as _uc
 
 import config as _config
 import database_utils.helpers as _dbh
-import simulations as _sims
-import variations as _vars
+import internal.simulations as _sims
+import internal.variations as _vars
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
