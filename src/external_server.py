@@ -14,6 +14,7 @@ import resultes_pydantic_models.runner as _pr
 import resultes_pydantic_models.simulations.parameters.ptes as _pptes
 import resultes_pydantic_models.simulations.parameters.ttes as _ttes
 import resultes_pydantic_models.simulations.simulation as _psim
+import resultes_pydantic_models.simulations.variation as _pvar
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -24,6 +25,7 @@ import database_utils.helpers as _dbh
 import external.auth as _auth
 import external.simulations as _sims
 import external.users as _users
+import external.variations as _vars
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _mu
 
@@ -123,12 +125,30 @@ async def create_and_run_new_simulation(
     return {"href": f"/simulations/{simulation.id}"}
 
 
+@app.get("/simulations/{simulation_id}")
+async def get_simulation(
+    simulation_id: str,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _psim.Simulation:
+    return await _sims.get_simulation(simulation_id, user, session)
+
+
 @app.get("/simulations")
 async def get_simulations(
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _cabc.Sequence[_psim.Simulation]:
     return await _sims.get_simulations(user, session)
+
+
+@app.get("/variations/{variation_id}")
+async def get_variation(
+    variation_id: str,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _pvar.Variation:
+    return await _vars.get_variation(variation_id, user, session)
 
 
 @app.get("/variations/{variation_id}/results/{result_path:path}")

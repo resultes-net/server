@@ -11,5 +11,10 @@
     "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
     "python.analysis.typeEvaluation.disableBytesTypePromotions": true,
     "python.analysis.typeEvaluation.deprecateTypingAliases": true,
-    "python.analysis.diagnosticMode": "workspace"
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.generateWithTypeAnnotation": true,
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.typeEvaluation.strictDictionaryInference": true,
+    "python.analysis.typeEvaluation.strictListInference": true,
+    "python.analysis.typeEvaluation.strictSetInference": true
 }

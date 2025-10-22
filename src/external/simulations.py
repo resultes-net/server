@@ -1,11 +1,29 @@
 import collections.abc as _cabc
 
-import resultes_pydantic_models.simulations.simulation as _psim
+import fastapi as _fapi
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
+import resultes_pydantic_models.simulations.simulation as _psim
+
+import query_helpers as _qh
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _muser
+
+
+async def get_simulation(
+    simulation_id: str,
+    user: _muser.User,
+    session: _sqlmas.AsyncSession,
+) -> _psim.Simulation:
+    simulation = await _qh.get_single(_sim.Simulation, simulation_id, session)
+
+    if simulation.user_id != user.id:
+        raise _fapi.HTTPException(
+            status_code=_fapi.status.HTTP_404_NOT_FOUND,
+        )
+
+    return simulation.to_model_simulation()
 
 
 async def get_simulations(
@@ -18,4 +36,6 @@ async def get_simulations(
 
     result = await session.exec(query)
 
-    return result.all()
+    model_simulations = [s.to_model_simulation() for s in result.all()]
+
+    return model_simulations

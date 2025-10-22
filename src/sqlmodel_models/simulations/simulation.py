@@ -23,7 +23,9 @@ class Simulation(
     created_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
     state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
-    parameters: _pttes.TtesParameters | _pptes.PtesParameters = _td.SIMULATION_PARAMETERS_FIELD
+    parameters: _pttes.TtesParameters | _pptes.PtesParameters = (
+        _td.SIMULATION_PARAMETERS_FIELD
+    )
 
     user_id: str = _dbh.create_id_field(foreign_key="user.id")
     user: "User" = _dbh.create_eager_relationship("simulations")
@@ -44,4 +46,5 @@ class Simulation(
             user_id=self.user_id,
             parameters=self.parameters,
             object_storage_url=self.object_storage_url,
+            variations=[v.to_model_variation() for v in self.variations],
         )
