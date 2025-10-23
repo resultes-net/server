@@ -1,11 +1,9 @@
-import sqlmodel as _sqlm
-
-import database_utils.helpers as _dbh
 import resultes_pydantic_models.common as _pcom
+import sqlmodel as _sqlm
 
 
 class SQLModelWithID(_sqlm.SQLModel):
-    id: str | None = _dbh.ID_FIELD
+    id: str
 
 
 class SQLModelWithIDAndState[S](SQLModelWithID):

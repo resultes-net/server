@@ -12,9 +12,9 @@ if _tp.TYPE_CHECKING:
 
 
 class Variation(
-    _pvar.VariationBase, _smb.SQLModelWithIDAndState[_pvar.VariationState], table=True
+    _pvar.Variation, _smb.SQLModelWithIDAndState[_pvar.VariationState], table=True
 ):
-    id: str | None = _dbh.ID_FIELD
+    id: str = _dbh.ID_FIELD
     created_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
     state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
@@ -22,17 +22,6 @@ class Variation(
     simulation_id: str = _dbh.create_id_field(foreign_key="simulation.id")
     simulation: "Simulation" = _dbh.create_eager_relationship("variations")
 
-    relative_deck_file_containing_dir_path: _pl.PureWindowsPath = _dbh.PURE_WINDOWS_PATH_FIELD
-
-    def to_model_variation(self) -> _pvar.Variation:
-        if not self.id:
-            raise ValueError("ID not set.")
-
-        return _pvar.Variation(
-            id=self.id,
-            created_on=self.created_on,
-            state=self.state,
-            state_changed_on=self.state_changed_on,
-            simulation_id=self.simulation_id,
-            relative_deck_file_containing_dir_path=self.relative_deck_file_containing_dir_path,
-        )
+    relative_deck_file_containing_dir_path: _pl.PureWindowsPath = (
+        _dbh.PURE_WINDOWS_PATH_FIELD
+    )

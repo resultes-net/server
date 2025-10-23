@@ -11,8 +11,7 @@ import fastapi.responses as _fresp
 import fastapi.security as _fsec
 import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.runner as _pr
-import resultes_pydantic_models.simulations.parameters.ptes as _pptes
-import resultes_pydantic_models.simulations.parameters.ttes as _ttes
+import resultes_pydantic_models.simulations.parameters as _params
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
 import resultes_pydantic_models.user as _pu
@@ -105,12 +104,9 @@ async def modify_user(
     return await _users.modify_user(user_modify, user, session)
 
 
-type Parameters = _ttes.TtesParameters | _pptes.PtesParameters
-
-
 @app.post("/simulations")
 async def create_and_run_new_simulation(
-    parameters: _tp.Annotated[Parameters, _fapi.Body(discriminator="type")],
+    parameters: _params.Parameters,
     user: ActiveUserDep,
     session: SessionDep,
 ) -> dict:
