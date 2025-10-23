@@ -14,7 +14,7 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 import database_utils
-import type_decorators
+import sqlmodel_models.simulations.simulation as _sim
 
 # revision identifiers, used by Alembic.
 revision: str = 'c888f409c6c6'
@@ -40,7 +40,7 @@ def upgrade() -> None:
     )
     op.create_table('simulation',
     sa.Column('type', postgresql.ENUM('TTES', 'PTES', 'BTES', name='type', create_type=False), nullable=False),
-    sa.Column('parameters', type_decorators.PydanticJsonTypeDecorator(), nullable=False),
+    sa.Column('parameters', _sim.ParametersTypeDecorator(), nullable=False),
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=False),
     sa.Column('created_on', sa.DateTime(), nullable=False),
     sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True),

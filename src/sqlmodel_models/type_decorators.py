@@ -1,14 +1,12 @@
-import typing as _tp
 
 import pydantic as _pyd
 import sqlalchemy as _sqla
 import sqlalchemy.types as _sqlt
-import sqlmodel as _sqlm
 
 
-def create_pydantic_json_field[T: _pyd.BaseModel](
+def create_pydantic_json_type_decorator[T: _pyd.BaseModel](
     clazz: type[T],
-) -> _tp.Any:
+) ->type[_sqla.TypeDecorator[T]]:
     class TypeDecorator(_sqlt.TypeDecorator[T]):
         impl = _sqla.JSON
 
@@ -18,4 +16,4 @@ def create_pydantic_json_field[T: _pyd.BaseModel](
         def process_result_value(self, value, dialect) -> T:
             return clazz(**value)
 
-    return _sqlm.Field(sa_type=TypeDecorator)
+    return TypeDecorator
