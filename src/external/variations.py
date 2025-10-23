@@ -17,4 +17,4 @@ async def get_variation(
     if variation.simulation.user_id != user.id:
         raise _fapi.HTTPException(_fapi.status.HTTP_404_NOT_FOUND)
 
-    return variation.to_model_variation()
+    return variation

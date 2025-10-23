@@ -35,9 +35,9 @@ async def get_waiting_variations(
         simulations.append(simulation.to_model_simulation())
 
         if variation.state == _pvar.VariationState.WAITING:
-            waiting_variations.append(variation.to_model_variation())
+            waiting_variations.append(variation)
         else:
-            other_variations.append(variation.to_model_variation())
+            other_variations.append(variation)
 
     associated_simulations = _remove_duplicates(simulations)
 
@@ -83,7 +83,7 @@ async def create_variation(
 
     await session.commit()
 
-    return variation.to_model_variation()
+    return variation
 
 
 async def update_variation_state(
