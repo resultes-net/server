@@ -71,7 +71,7 @@ ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 
 @_ctx.asynccontextmanager
-async def lifespan(app: _fapi.FastAPI) -> _cabc.AsyncIterable[None]:
+async def lifespan(_: _fapi.FastAPI) -> _cabc.AsyncIterator[None]:
     global swift
     with _cf.ThreadPoolExecutor(N_MAX_SWIFT_WORKERS) as executor:
         async with _sm.Swift(
