@@ -154,7 +154,7 @@ async def get_variation_result(
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _fresp.StreamingResponse:
-    # TODO: ensure the variation belongs to the user
+    _ = await _vars.get_variation(variation_id, user, session)
 
     media_type = "image/png" if result_path.endswith(".png") else None
 
