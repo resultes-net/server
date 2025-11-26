@@ -109,7 +109,7 @@ async def create_and_run_new_simulation(
     parameters: _params.Parameters,
     user: ActiveUserDep,
     session: SessionDep,
-) -> dict:
+) -> _psim.SimulationBase:
     simulation = _sim.Simulation(
         user=user,
         parameters=parameters,
@@ -118,7 +118,7 @@ async def create_and_run_new_simulation(
     session.add(simulation)
     await session.commit()
 
-    return {"href": f"/simulations/{simulation.id}"}
+    return simulation
 
 
 @app.get("/simulations/{simulation_id}")

@@ -29,8 +29,6 @@ class Simulation(
     user_id: str = _dbh.create_id_field(foreign_key="user.id")
     user: "User" = _dbh.create_eager_relationship("simulations")
 
-    object_storage_url: _pyd.HttpUrl | None = _dbh.HTTP_URL_FIELD
-
     variations: list[_var.Variation] = _dbh.create_eager_relationship("simulation")
 
     def to_model_simulation(self) -> _psim.Simulation:
@@ -44,6 +42,5 @@ class Simulation(
             state_changed_on=self.state_changed_on,
             user_id=self.user_id,
             parameters=self.parameters,
-            object_storage_url=self.object_storage_url,
             variations=self.variations,
         )
