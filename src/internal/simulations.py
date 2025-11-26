@@ -1,6 +1,7 @@
 import collections.abc as _cabc
 
 import resultes_pydantic_models.simulations.simulation as _psim
+import resultes_pydantic_models.simulations.variation as _pvar
 import sqlmodel.ext.asyncio.session as _sqlmas
 
 import query_helpers as _qh
@@ -23,3 +24,12 @@ async def update_simulation_state(
 ) -> _psim.SimulationState:
     await _qh.set_state(_sim.Simulation, simulation_id, new_state, session)
     return new_state
+
+
+async def get_variations(
+    simulation_id: str,
+    session: _sqlmas.AsyncSession,
+) -> _cabc.Sequence[_pvar.Variation]:
+    simulation = await _qh.get_single(_sim.Simulation, simulation_id, session)
+
+    return simulation.variations

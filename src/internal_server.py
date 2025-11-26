@@ -48,6 +48,14 @@ async def get_waiting_variations(
     return await _vars.get_waiting_variations(session)
 
 
+@app.get("/simulations/{simulation_id}/variations")
+async def get_variations(
+    simulation_id: str,
+    session: SessionDep,
+) -> _cabc.Sequence[_pvar.Variation]:
+    return await _sims.get_variations(simulation_id, session)
+
+
 @app.put("/simulations/{simulation_id}/state")
 async def update_simulation_state(
     simulation_id: str, new_state: _psim.SimulationState, session: SessionDep
