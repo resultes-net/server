@@ -163,6 +163,30 @@ async def get_variation_result(
     return _fresp.StreamingResponse(read_coroutine, media_type=media_type)
 
 
+@app.get("/variations/{variation_id}/results")
+async def get_variation_result(
+    variation_id: str,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _fresp.StreamingResponse:
+    _ = await _vars.get_variation(variation_id, user, session)
+
+    media_type = "application/zip"
+
+    object_storage_input_zip_file_path = _pr.ObjectStorageInputZipFilePath(
+        container="resultes-results", path=f"results/{variation_id}.zip"
+    )
+
+    size_in_bytes = await swift.get_size_in_bytes(object_storage_input_zip_file_path)
+    headers = {"Content-Length": str(size_in_bytes)}
+
+    read_coroutine = _read_variation_results(object_storage_input_zip_file_path)
+
+    return _fresp.StreamingResponse(
+        read_coroutine, headers=headers, media_type=media_type
+    )
+
+
 async def _read_variation_result(
     variation_id: str, result_path: str
 ) -> _cabc.AsyncIterator[bytes]:
@@ -170,6 +194,15 @@ async def _read_variation_result(
         container="resultes-results", path=f"results/{variation_id}/{result_path}"
     )
     chunks = swift.download_chunks(object_storage_input_file_path)
+
+    async for chunk in chunks:
+        yield chunk
+
+
+async def _read_variation_results(
+    object_storage_input_zip_file_path: _pr.ObjectStorageInputZipFilePath,
+) -> _cabc.AsyncIterator[bytes]:
+    chunks = swift.download_chunks(object_storage_input_zip_file_path)
 
     async for chunk in chunks:
         yield chunk
