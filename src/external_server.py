@@ -177,9 +177,6 @@ async def get_variation_results(
         container="resultes-results", path=f"results/{variation_id}.zip"
     )
 
-    size_in_bytes = await swift.get_size_in_bytes(object_storage_input_zip_file_path)
-    headers = {"Content-Length": str(size_in_bytes)}
-
     headers, chunks = await swift.download_chunks(object_storage_input_zip_file_path)
 
     streaming_response_headers = {"Content-Length": headers["Content-Length"]}
