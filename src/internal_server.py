@@ -1,6 +1,7 @@
 import collections.abc as _cabc
 import logging as _log
 import typing as _tp
+import pydantic as _pyd
 
 import fastapi as _fapi
 import resultes_pydantic_models.server as _psrv
@@ -63,6 +64,13 @@ async def update_simulation_state(
     return await _sims.update_simulation_state(simulation_id, new_state, session)
 
 
+@app.put("/simulations/{simulation_id}/state")
+async def update_simulation_progress(
+    simulation_id: str, new_progress: _pyd.NonNegativeInt, session: SessionDep
+) -> int:
+    return await _sims.update_simulation_progress(simulation_id, new_progress, session)
+
+
 @app.post("/simulations/{simulation_id}/variations")
 async def create_variation(
     simulation_id: str, variation: _pvar.CreateVariation, session: SessionDep
@@ -75,6 +83,13 @@ async def update_variation_state(
     variation_id: str, new_state: _pvar.VariationState, session: SessionDep
 ) -> _pvar.VariationState:
     return await _vars.update_variation_state(variation_id, new_state, session)
+
+
+@app.put("/variations/{variation_id}/progress")
+async def update_variation_progress(
+    variation_id: str, new_progress: _pyd.NonNegativeInt, session: SessionDep
+) -> int:
+    return await _vars.update_variation_progress(variation_id, new_progress, session)
 
 
 if __name__ == "__main__":

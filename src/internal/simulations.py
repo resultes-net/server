@@ -26,6 +26,17 @@ async def update_simulation_state(
     return new_state
 
 
+async def update_simulation_progress(
+    simulation_id: str,
+    new_progress: int,
+    session: _sqlmas.AsyncSession,
+) -> int:
+    instance = await _qh.get_single(_sim.Simulation, simulation_id, session)
+    instance.progress = new_progress
+    await session.commit()
+    return new_progress
+
+
 async def get_variations(
     simulation_id: str,
     session: _sqlmas.AsyncSession,

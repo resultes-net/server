@@ -93,3 +93,14 @@ async def update_variation_state(
 ) -> _pvar.VariationState:
     await _qh.set_state(_var.Variation, variation_id, new_state, session)
     return new_state
+
+
+async def update_variation_progress(
+    variation_id: str,
+    new_progress: int,
+    session: _sqlmas.AsyncSession,
+) -> int:
+    instance = await _qh.get_single(_var.Variation, variation_id, session)
+    instance.progress = new_progress
+    await session.commit()
+    return new_progress
