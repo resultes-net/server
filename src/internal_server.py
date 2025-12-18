@@ -42,6 +42,11 @@ async def get_simulations_waiting_for_variations_creation(
     )
 
 
+@app.get("/simulation/{simulation_id}")
+async def get_simulation(simulation_id: str, session: SessionDep) -> _psim.Simulation:
+    return await _sims.get_simulation(simulation_id, session)
+
+
 @app.get("/waiting-variations")
 async def get_waiting_variations(
     session: SessionDep,

@@ -17,6 +17,14 @@ async def get_simulations(
     return simulations
 
 
+async def get_simulation(
+    simulation_id: str,
+    session: _sqlmas.AsyncSession,
+) -> _psim.Simulation:
+    db_simulation = await _qh.get_single(_sim.Simulation, simulation_id, session)
+    return db_simulation.to_model_simulation()
+
+
 async def update_simulation_state(
     simulation_id: str,
     new_state: _psim.SimulationState,
