@@ -69,7 +69,7 @@ async def update_simulation_state(
     return await _sims.update_simulation_state(simulation_id, new_state, session)
 
 
-@app.put("/simulations/{simulation_id}/state")
+@app.put("/simulations/{simulation_id}/progress")
 async def update_simulation_progress(
     simulation_id: str, new_progress: _pyd.NonNegativeInt, session: SessionDep
 ) -> int:
