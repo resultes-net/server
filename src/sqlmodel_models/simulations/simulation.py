@@ -40,6 +40,7 @@ class Simulation(
             created_on=self.created_on,
             state=self.state,
             state_changed_on=self.state_changed_on,
+            progress=self.progress,
             user_id=self.user_id,
             parameters=self.parameters,
             variations=self.variations,
