@@ -22,6 +22,8 @@ _ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 _PWD_CONTEXT = _plctx.CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+_LATEST_LOGIN_ON = None
+
 
 def _is_timezone_aware_in_future(datetime: _dt.datetime) -> _dt.datetime:
     if datetime.tzinfo is None:
@@ -89,7 +91,14 @@ async def create_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    _LATEST_LOGIN = _rpmc.utc_now()
+
     return _create_token(user.user_name)
+
+
+def get_latest_login_on() -> _dt.datetime | None:
+    return _LATEST_LOGIN_ON
 
 
 async def authenticate_user(

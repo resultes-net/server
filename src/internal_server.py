@@ -15,6 +15,7 @@ import config as _config
 import database_utils.helpers as _dbh
 import internal.simulations as _sims
 import internal.variations as _vars
+import external.auth as _auth
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -95,6 +96,12 @@ async def update_variation_progress(
     variation_id: str, new_progress: _pyd.NonNegativeInt, session: SessionDep
 ) -> int:
     return await _vars.update_variation_progress(variation_id, new_progress, session)
+
+
+@app.get("/latest-login")
+def get_latest_login() -> _psrv.LatestLogin:
+    latest_login_on = _auth.get_latest_login_on()
+    return _psrv.LatestLogin(on=latest_login_on)
 
 
 if __name__ == "__main__":
