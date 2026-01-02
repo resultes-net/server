@@ -99,33 +99,22 @@ async def create_token(
 
 
 async def _update_latest_login(session: _sqlmas.AsyncSession) -> None:
-    # Lock the entire table to prevent concurrent inserts
-    # Type checker complains but it's just a case of a missing overload.
-    await session.exec(_sqlm.text("LOCK TABLE latestlogin IN EXCLUSIVE MODE"))
-
     now = _rpmc.utc_now()
 
     latest_login = await _get_latest_login(session)
-
-    if latest_login:
-        latest_login.on = now
-    else:
-        latest_login = _sll.LatestLogin(on=now)
-        session.add(latest_login)
+    latest_login.on = now
 
     await session.commit()
 
 
 async def get_latest_login(session: _sqlmas.AsyncSession) -> _rsrv.LatestLogin:
-    latest_login = await _get_latest_login(session)
-    latest_login_on = latest_login.on if latest_login else None
-    return _rsrv.LatestLogin(on=latest_login_on)
+    return await _get_latest_login(session)
 
 
-async def _get_latest_login(session: _sqlmas.AsyncSession) -> _sll.LatestLogin | None:
+async def _get_latest_login(session: _sqlmas.AsyncSession) -> _sll.LatestLogin:
     statement = _sqlm.select(_sll.LatestLogin)
     rows = await session.exec(statement)
-    latest_login = rows.one_or_none()
+    latest_login = rows.one()
     return latest_login
 
 
