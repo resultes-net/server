@@ -7,10 +7,13 @@ import jwt as _jwt
 import passlib.context as _plctx
 import pydantic as _pyd
 import resultes_pydantic_models.common as _rpmc
+import resultes_pydantic_models.server as _rsrv
 import sqlmodel.ext.asyncio.session as _sqlmas
 
 import sqlmodel_models.user as _mu
 import external.users as _users
+import sqlmodel_models.latest_login as _sll
+import sqlmodel as _sqlm
 
 _LOGGER = _log.getLogger(__name__)
 
@@ -21,8 +24,6 @@ _ALGORITHM = "HS256"
 _ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 _PWD_CONTEXT = _plctx.CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-_latest_login_on = None
 
 
 def _is_timezone_aware_in_future(datetime: _dt.datetime) -> _dt.datetime:
@@ -92,14 +93,36 @@ async def create_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    global _latest_login_on
-    _latest_login_on = _rpmc.utc_now()
+    await _update_latest_login(session)
 
     return _create_token(user.user_name)
 
 
-def get_latest_login_on() -> _dt.datetime | None:
-    return _latest_login_on
+async def _update_latest_login(session: _sqlmas.AsyncSession) -> None:
+    now = _rpmc.utc_now()
+
+    latest_login = await _get_latest_login(session)
+
+    if latest_login:
+        latest_login.on = now
+    else:
+        latest_login = _sll.LatestLogin(on=now)
+        session.add(latest_login)
+
+    await session.commit()
+
+
+async def get_latest_login(session: _sqlmas.AsyncSession) -> _rsrv.LatestLogin:
+    latest_login = await _get_latest_login(session)
+    latest_login_on = latest_login.on if latest_login else None
+    return _rsrv.LatestLogin(on=latest_login_on)
+
+
+async def _get_latest_login(session: _sqlmas.AsyncSession) -> _sll.LatestLogin | None:
+    statement = _sqlm.select(_sll.LatestLogin)
+    rows = await session.exec(statement)
+    latest_login = rows.one_or_none()
+    return latest_login
 
 
 async def authenticate_user(

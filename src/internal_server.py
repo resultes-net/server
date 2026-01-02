@@ -99,9 +99,8 @@ async def update_variation_progress(
 
 
 @app.get("/latest-login")
-def get_latest_login() -> _psrv.LatestLogin:
-    latest_login_on = _auth.get_latest_login_on()
-    return _psrv.LatestLogin(on=latest_login_on)
+async def get_latest_login(session: SessionDep) -> _psrv.LatestLogin:
+    return await _auth.get_latest_login(session)
 
 
 if __name__ == "__main__":
