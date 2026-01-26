@@ -21,6 +21,7 @@ class Simulation(
     _psim.SimulationBase, _smb.SQLModelWithIDAndState[_psim.SimulationState], table=True
 ):
     id: str = _dbh.ID_FIELD
+    name: str = _sqlm.Field(max_length=1024)
     created_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
     state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
@@ -37,6 +38,7 @@ class Simulation(
 
         return _psim.Simulation(
             id=self.id,
+            name=self.name,
             created_on=self.created_on,
             state=self.state,
             state_changed_on=self.state_changed_on,

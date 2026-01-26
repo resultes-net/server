@@ -11,7 +11,6 @@ import fastapi.responses as _fresp
 import fastapi.security as _fsec
 import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.runner as _pr
-import resultes_pydantic_models.simulations.parameters as _params
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
 import resultes_pydantic_models.user as _pu
@@ -106,13 +105,14 @@ async def modify_user(
 
 @app.post("/simulations")
 async def create_and_run_new_simulation(
-    parameters: _params.Parameters,
+    create_simulation: _psim.CreateSimulation,
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _psim.SimulationBase:
     simulation = _sim.Simulation(
+        name=create_simulation.name,
+        parameters=create_simulation.parameters,
         user=user,
-        parameters=parameters,
     )
 
     session.add(simulation)
