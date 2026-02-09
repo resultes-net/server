@@ -158,10 +158,16 @@ async def get_variation_result_headers(
 
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
         container="resultes-results",
-        path=f"/results/{variation_id}/results/{result_path}",
+        path=f"results/{variation_id}/{result_path}",
     )
 
-    size_in_bytes = await swift.get_size_in_bytes(object_storage_input_file_path)
+    try:
+        size_in_bytes = await swift.get_size_in_bytes(object_storage_input_file_path)
+    except _sm.ClientException as client_exception:
+        raise _fapi.HTTPException(
+            status_code=client_exception.http_status,
+            detail=client_exception.http_reason,
+        )
 
     headers = {"Content-Length": str(size_in_bytes)}
 
@@ -179,11 +185,18 @@ async def get_variation_result(
 ) -> _fresp.StreamingResponse:
     _ = await _vars.get_variation(variation_id, user, session)
 
-    media_type = "image/png" if result_path.endswith(".png") else None
+    path = f"results/{variation_id}/{result_path}"
 
-    read_coroutine = _read_variation_result(variation_id, result_path)
+    _, chunks = await _read_variation_result(path)
 
-    return _fresp.StreamingResponse(read_coroutine, media_type=media_type)
+    if result_path.endswith(".png"):
+        media_type = "image/png"
+    elif result_path.endswith(".log"):
+        media_type = "text/plain"
+    else:
+        media_type = None
+
+    return _fresp.StreamingResponse(chunks, media_type=media_type)
 
 
 @app.get("/variations/{variation_id}/results")
@@ -196,29 +209,33 @@ async def get_variation_results(
 
     media_type = "application/zip"
 
-    object_storage_input_zip_file_path = _pr.ObjectStorageInputZipFilePath(
-        container="resultes-results", path=f"results/{variation_id}.zip"
-    )
+    path = f"results/{variation_id}.zip"
 
-    headers, chunks = await swift.download_chunks(object_storage_input_zip_file_path)
+    headers, chunks = await _read_variation_result(path)
 
-    streaming_response_headers = {"Content-Length": headers["Content-Length"]}
-
-    return _fresp.StreamingResponse(
-        chunks, headers=streaming_response_headers, media_type=media_type
-    )
+    return _fresp.StreamingResponse(chunks, headers=headers, media_type=media_type)
 
 
-async def _read_variation_result(
-    variation_id: str, result_path: str
-) -> _cabc.AsyncIterator[bytes]:
+Headers = _tp.TypedDict("Headers", {"Content-Length": str})
+
+
+async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
-        container="resultes-results", path=f"results/{variation_id}/{result_path}"
+        container="resultes-results", path=path
     )
-    _, chunks = await swift.download_chunks(object_storage_input_file_path)
+    try:
+        all_headers, chunks = await swift.download_chunks(
+            object_storage_input_file_path
+        )
+    except _sm.ClientException as client_exception:
+        raise _fapi.HTTPException(
+            status_code=client_exception.http_status,
+            detail=client_exception.http_reason,
+        )
 
-    async for chunk in chunks:
-        yield chunk
+    headers: Headers = {"Content-Length": all_headers["Content-Length"]}
+
+    return headers, chunks
 
 
 if __name__ == "__main__":
