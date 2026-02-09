@@ -147,6 +147,29 @@ async def get_variation(
     return await _vars.get_variation(variation_id, user, session)
 
 
+@app.head("/variations/{variation_id}/results/{result_path:path}")
+async def get_variation_result_headers(
+    variation_id: str,
+    result_path: str,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _fapi.Response:
+    _ = await _vars.get_variation(variation_id, user, session)
+
+    object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
+        container="resultes-results",
+        path=f"/results/{variation_id}/results/{result_path}",
+    )
+
+    size_in_bytes = await swift.get_size_in_bytes(object_storage_input_file_path)
+
+    headers = {"Content-Length": str(size_in_bytes)}
+
+    response = _fapi.Response(headers=headers)
+
+    return response
+
+
 @app.get("/variations/{variation_id}/results/{result_path:path}")
 async def get_variation_result(
     variation_id: str,
