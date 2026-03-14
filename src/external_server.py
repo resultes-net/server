@@ -228,10 +228,14 @@ async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
             object_storage_input_file_path
         )
     except _sm.ClientException as client_exception:
+        _log.exception("An error occurred.")
         raise _fapi.HTTPException(
             status_code=client_exception.http_status,
             detail=client_exception.http_reason,
         )
+    except Exception:
+        _log.exception("An error occurred.")
+        raise
 
     headers: Headers = {"Content-Length": all_headers["Content-Length"]}
 
@@ -239,7 +243,7 @@ async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
 
 
 if __name__ == "__main__":
-    _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
+    _log.basicConfig(format=LOG_FORMAT, level=_log.DEBUG)
     _log.info("Starting server...")
     port = int(_os.environ.get("PORT", "8080"))
     _uc.run(app, host="0.0.0.0", port=port, log_config=None)
