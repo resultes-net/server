@@ -233,7 +233,7 @@ async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
             status_code=client_exception.http_status,
             detail=client_exception.http_reason,
         )
-    except Exception:
+    except:
         _log.exception("An error occurred.")
         raise
 
