@@ -19,8 +19,7 @@ import external.auth as _auth
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
-
-engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
+engine = _sqlae.create_async_engine(_config.DB_CONNECTION_STRING)
 
 
 async def get_session() -> _cabc.AsyncIterable[_sqlmas.AsyncSession]:
@@ -106,4 +105,4 @@ async def get_latest_login(session: SessionDep) -> _psrv.LatestLogin:
 if __name__ == "__main__":
     _log.basicConfig(format=LOG_FORMAT, level=_log.INFO)
     _log.info("Starting server...")
-    _uc.run(app, host="0.0.0.0", port=8000, log_config=None)
+    _uc.run(app, host="0.0.0.0", port=8080, log_config=None)

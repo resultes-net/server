@@ -37,7 +37,7 @@ N_MAX_SWIFT_WORKERS = 16
 
 
 def create_engine():
-    return _sqlae.create_async_engine(_config.DB_CONNECTION_STRING, echo=True)
+    return _sqlae.create_async_engine(_config.DB_CONNECTION_STRING)
 
 
 engine = create_engine()
