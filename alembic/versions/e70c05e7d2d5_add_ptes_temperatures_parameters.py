@@ -59,7 +59,11 @@ DEFAULT_TEMPERATURES = {
 
 
 def upgrade() -> None:
-    statement = sa.select(Simulation)
+    # Select only PTES simulations that are missing the 'temperatures' field
+    statement = sa.select(Simulation).where(
+        Simulation.parameters['values']['type'].astext == 'ptes',
+        Simulation.parameters['values']['temperatures'].astext == None
+    )
 
     with sess.Session(bind=op.get_bind()) as session:
         simulations = session.scalars(statement)
@@ -67,22 +71,13 @@ def upgrade() -> None:
         for simulation in simulations:
             parameters = copy.deepcopy(simulation.parameters)
 
-            # Skip if parameters doesn't have the expected structure
+            # We already filtered for dict structure in the where clause, 
+            # but keep basic safety check
             if not isinstance(parameters, dict):
                 continue
-                
-            values = parameters.get("values", {})
-            
-            # Skip if values is not a dict
-            if not isinstance(values, dict):
-                continue
-            
-            # Only process PTES simulations
-            if values.get("type") != "ptes":
-                continue
 
-            # Check if temperatures field already exists
-            if "temperatures" in values:
+            values = parameters.get("values", {})
+            if not isinstance(values, dict):
                 continue
 
             # Add the temperatures field with default values
@@ -95,7 +90,11 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    statement = sa.select(Simulation)
+    # Select only PTES simulations that have the 'temperatures' field
+    statement = sa.select(Simulation).where(
+        Simulation.parameters['values']['type'].astext == 'ptes',
+        Simulation.parameters['values']['temperatures'].astext != None
+    )
 
     with sess.Session(bind=op.get_bind()) as session:
         simulations = session.scalars(statement)
@@ -103,21 +102,15 @@ def downgrade() -> None:
         for simulation in simulations:
             parameters = copy.deepcopy(simulation.parameters)
 
-            # Skip if parameters doesn't have the expected structure
+            # Basic safety check
             if not isinstance(parameters, dict):
                 continue
-                
+
             values = parameters.get("values", {})
-            
-            # Skip if values is not a dict
             if not isinstance(values, dict):
                 continue
-            
-            # Only process PTES simulations
-            if values.get("type") != "ptes":
-                continue
 
-            # Remove the temperatures field if it exists
+            # Remove the temperatures field
             if "temperatures" in values:
                 values.pop("temperatures")
                 parameters["values"] = values
