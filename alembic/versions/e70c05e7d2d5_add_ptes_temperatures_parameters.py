@@ -61,8 +61,8 @@ DEFAULT_TEMPERATURES = {
 def upgrade() -> None:
     # Select only PTES simulations that are missing the 'temperatures' field
     statement = sa.select(Simulation).where(
-        Simulation.parameters['values']['type'].astext == 'ptes',
-        Simulation.parameters['values']['temperatures'].astext == None
+        Simulation.parameters['values']['type'].as_string() == 'ptes',
+        Simulation.parameters['values']['temperatures'].as_string() == None
     )
 
     with sess.Session(bind=op.get_bind()) as session:
@@ -92,8 +92,8 @@ def upgrade() -> None:
 def downgrade() -> None:
     # Select only PTES simulations that have the 'temperatures' field
     statement = sa.select(Simulation).where(
-        Simulation.parameters['values']['type'].astext == 'ptes',
-        Simulation.parameters['values']['temperatures'].astext != None
+        Simulation.parameters['values']['type'].as_string() == 'ptes',
+        Simulation.parameters['values']['temperatures'].as_string() != None
     )
 
     with sess.Session(bind=op.get_bind()) as session:
