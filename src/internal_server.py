@@ -1,9 +1,9 @@
 import collections.abc as _cabc
 import logging as _log
 import typing as _tp
-import pydantic as _pyd
 
 import fastapi as _fapi
+import pydantic as _pyd
 import resultes_pydantic_models.server as _psrv
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
@@ -13,9 +13,9 @@ import uvicorn as _uc
 
 import config as _config
 import database_utils.helpers as _dbh
+import external.auth as _auth
 import internal.simulations as _sims
 import internal.variations as _vars
-import external.auth as _auth
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -35,11 +35,10 @@ app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
 
 @app.get("/simulations")
 async def get_simulations_waiting_for_variations_creation(
-    state: _tp.Literal["waiting-for-variations-creation"], session: SessionDep
+    state: _tp.Literal[_psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION],
+    session: SessionDep,
 ) -> _cabc.Sequence[_psim.Simulation]:
-    return await _sims.get_simulations(
-        _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION, session
-    )
+    return await _sims.get_simulations(state, session)
 
 
 @app.get("/simulation/{simulation_id}")
