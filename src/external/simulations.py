@@ -2,6 +2,8 @@ import collections.abc as _cabc
 import typing as _tp
 
 import fastapi as _fapi
+import resultes_openstack_utils.swift_multithreaded as _sm
+import resultes_pydantic_models.runner as _mrunner
 import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -9,27 +11,6 @@ import sqlmodel.ext.asyncio.session as _sqlmas
 import query_helpers as _qh
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _muser
-
-
-async def update_state(
-    simulation_id: str,
-    new_state: _tp.Literal[_psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION],
-    user: _muser.User,
-    session: _sqlmas.AsyncSession,
-) -> _psim.SimulationState:
-    simulation = await _get_db_simulation(simulation_id, user, session)
-
-    if simulation.state != _psim.SimulationState.ERROR:
-        raise _fapi.HTTPException(
-            status_code=_fapi.status.HTTP_409_CONFLICT,
-            detail="You can only reset simulations in the erorr state.",
-        )
-
-    simulation.state = new_state
-
-    await session.commit()
-
-    return new_state
 
 
 async def get_simulation(
@@ -55,6 +36,53 @@ async def _get_db_simulation(
         )
 
     return simulation
+
+
+async def update_state(
+    simulation_id: str,
+    new_state: _tp.Literal[_psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION],
+    user: _muser.User,
+    session: _sqlmas.AsyncSession,
+    swift: _sm.Swift,
+) -> _psim.SimulationState:
+    simulation = await _get_db_simulation(simulation_id, user, session)
+
+    if simulation.state != _psim.SimulationState.ERROR:
+        raise _fapi.HTTPException(
+            status_code=_fapi.status.HTTP_409_CONFLICT,
+            detail="You can only reset simulations in the erorr state.",
+        )
+
+    variations = list(simulation.variations)
+    variation_ids = [v.id for v in variations]
+
+    simulation.state = new_state
+
+    for variation_id in variations:
+        await session.delete(variation_id)
+
+    await session.commit()
+    del variations
+
+    for variation_id in variation_ids:
+        await _delete_results_if_they_exist(variation_id, swift)
+
+    return new_state
+
+
+async def _delete_results_if_they_exist(variation_id: str, swift: _sm.Swift) -> None:
+    try:
+        results_dir_path = _mrunner.ObjectStorageInputFilePath(
+            container="resultes-results", path=f"{variation_id}/"
+        )
+        await swift.delete_folder(results_dir_path)
+
+        zip_path = _mrunner.ObjectStorageInputZipFilePath(
+            container="resultes-results", path=f"{variation_id}.zip"
+        )
+        await swift.delete(zip_path)
+    except _sm.ClientException:
+        pass
 
 
 async def get_simulations(

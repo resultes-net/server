@@ -137,7 +137,7 @@ async def update_simulation_state(
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _psim.SimulationState:
-    return await _sims.update_state(simulation_id, new_state, user, session)
+    return await _sims.update_state(simulation_id, new_state, user, session, swift)
 
 
 @app.get("/simulations")
