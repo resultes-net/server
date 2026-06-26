@@ -130,7 +130,7 @@ async def get_simulation(
     return await _sims.get_simulation(simulation_id, user, session)
 
 
-@app.put("/simulations/{simulation_id}")
+@app.put("/simulations/{simulation_id}/state")
 async def update_simulation_state(
     simulation_id: str,
     new_state: _tp.Literal[_psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION],
