@@ -39,6 +39,7 @@ class Simulation(
         return _psim.Simulation(
             id=self.id,
             name=self.name,
+            location=self.location,
             created_on=self.created_on,
             state=self.state,
             state_changed_on=self.state_changed_on,
