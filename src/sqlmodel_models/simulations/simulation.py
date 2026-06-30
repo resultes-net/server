@@ -1,6 +1,5 @@
 import typing as _tp
 
-import pydantic as _pyd
 import resultes_pydantic_models.common as _pcom
 import resultes_pydantic_models.simulations.parameters as _params
 import resultes_pydantic_models.simulations.simulation as _psim
