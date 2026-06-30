@@ -111,6 +111,7 @@ async def create_and_run_new_simulation(
 ) -> _psim.SimulationBase:
     simulation = _sim.Simulation(
         name=create_simulation.name,
+        location=create_simulation.location,
         parameters=create_simulation.parameters,
         user=user,
     )
