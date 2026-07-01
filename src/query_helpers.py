@@ -1,4 +1,5 @@
 import collections.abc as _cabc
+import enum as _enum
 import typing as _tp
 
 import fastapi as _fapi
@@ -29,10 +30,12 @@ async def get_single[M: _smb.SQLModelWithID](
 
 async def get[M: _smb.SQLModelWithIDAndState[_tp.Any]](
     clazz: type[M],
-    state: _tp.Any,
+    state: _enum.Enum | _cabc.Sequence[_enum.Enum],
     session: _sqlmas.AsyncSession,
 ) -> _cabc.Sequence[M]:
-    query = _sqlm.select(clazz).where(clazz.state == state)
+    states = [state] if isinstance(state, _enum.Enum) else list(state)
+
+    query = _sqlm.select(clazz).where(_sqlm.col(clazz.state).in_(states))
     rows = await session.exec(query)
     return rows.all()
 
