@@ -3,6 +3,7 @@ import typing as _tp
 
 import fastapi as _fapi
 import resultes_openstack_utils.swift_multithreaded as _sm
+import resultes_pydantic_models.common as _pcom
 import resultes_pydantic_models.runner as _mrunner
 import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
@@ -56,7 +57,11 @@ async def update_state(
     variations = list(simulation.variations)
     variation_ids = [v.id for v in variations]
 
+    now = _pcom.utc_now()
+
     simulation.state = new_state
+    simulation.created_on = now
+    simulation.state_changed_on = now
 
     for variation_id in variations:
         await session.delete(variation_id)
