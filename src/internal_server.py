@@ -35,7 +35,9 @@ app = _fapi.FastAPI(root_path=_config.ROOT_PATH)
 
 @app.get("/simulations")
 async def get_simulations_waiting_for_variations_creation(
-    state: _tp.Literal[_psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION],
+    state: _tp.Literal[
+        _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION, "running"
+    ],
     session: SessionDep,
 ) -> _cabc.Sequence[_psim.Simulation]:
     return await _sims.get_simulations(state, session)
