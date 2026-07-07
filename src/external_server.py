@@ -204,6 +204,8 @@ async def get_variation_result(
         media_type = "image/png"
     elif result_path.endswith(".log"):
         media_type = "text/plain"
+    elif result_path.endswith(".json"):
+        media_type = "application/json"
     else:
         media_type = None
 
