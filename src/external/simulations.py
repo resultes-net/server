@@ -59,9 +59,10 @@ async def update_state(
 
     now = _pcom.utc_now()
 
-    simulation.state = new_state
+    simulation.state = _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION
     simulation.created_on = now
     simulation.state_changed_on = now
+    simulation.progress = 0
 
     for variation_id in variations:
         await session.delete(variation_id)
