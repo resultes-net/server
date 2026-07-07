@@ -64,8 +64,8 @@ async def update_state(
     simulation.state_changed_on = now
     simulation.progress = 0
 
-    for variation_id in variations:
-        await session.delete(variation_id)
+    for variation in variations:
+        await session.delete(variation)
 
     await session.commit()
     del variations
