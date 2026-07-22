@@ -30,7 +30,7 @@ WASTE_HEAT_RECOVERY_SOURCE = _whrs.WasteHeatRecoverySource(
         _whrs.MassFlowRateAndTemperature(mass_flow_rate_kg_per_h=0, temperature_deg_C=0)
         for _ in range(_whrs.N_HOURS_PER_YEAR)
     ],
-)
+).model_dump()
 
 
 Base = orm.declarative_base()
