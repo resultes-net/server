@@ -1,14 +1,14 @@
-
 import pydantic as _pyd
 import sqlalchemy as _sqla
+import sqlalchemy.dialects.postgresql.json as _sqlapj
 import sqlalchemy.types as _sqlt
 
 
 def create_pydantic_json_type_decorator[T: _pyd.BaseModel](
     clazz: type[T],
-) ->type[_sqla.TypeDecorator[T]]:
+) -> type[_sqla.TypeDecorator[T]]:
     class TypeDecorator(_sqlt.TypeDecorator[T]):
-        impl = _sqla.JSON
+        impl = _sqlapj.JSONB
 
         def process_bind_param(self, value: T, dialect) -> _pyd.JsonValue:
             return value.model_dump()
