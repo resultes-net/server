@@ -13,6 +13,7 @@ import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.runner as _pr
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
+import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -108,10 +109,11 @@ async def create_and_run_new_simulation(
     create_simulation: _psim.CreateSimulation,
     user: ActiveUserDep,
     session: SessionDep,
-) -> _psim.SimulationBase:
+) -> _psim.GetSimulation:
     simulation = _sim.Simulation(
         name=create_simulation.name,
         location=create_simulation.location,
+        type=create_simulation.type,
         parameters=create_simulation.parameters,
         user=user,
     )
@@ -127,8 +129,19 @@ async def get_simulation(
     simulation_id: str,
     user: ActiveUserDep,
     session: SessionDep,
-) -> _psim.Simulation:
+) -> _psim.GetSimulation:
     return await _sims.get_simulation(simulation_id, user, session)
+
+
+@app.get("/simulations/{simulation_id}/parameters")
+async def get_simulation_parameters(
+    simulation_id: str,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _pparams.Parameters:
+    simulation = await _sims.get_simulation(simulation_id, user, session)
+
+    return simulation.parameters
 
 
 @app.put("/simulations/{simulation_id}/state")
@@ -145,7 +158,7 @@ async def update_simulation_state(
 async def get_simulations(
     user: ActiveUserDep,
     session: SessionDep,
-) -> _cabc.Sequence[_psim.Simulation]:
+) -> _cabc.Sequence[_psim.GetSimulation]:
     return await _sims.get_simulations(user, session)
 
 

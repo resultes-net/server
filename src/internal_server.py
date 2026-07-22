@@ -5,6 +5,7 @@ import typing as _tp
 import fastapi as _fapi
 import pydantic as _pyd
 import resultes_pydantic_models.server as _psrv
+import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
 import sqlalchemy.ext.asyncio.engine as _sqlae
@@ -39,13 +40,23 @@ async def get_simulations_waiting_for_variations_creation(
         _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION, "running"
     ],
     session: SessionDep,
-) -> _cabc.Sequence[_psim.Simulation]:
+) -> _cabc.Sequence[_psim.GetSimulation]:
     return await _sims.get_simulations(state, session)
 
 
 @app.get("/simulation/{simulation_id}")
-async def get_simulation(simulation_id: str, session: SessionDep) -> _psim.Simulation:
+async def get_simulation(
+    simulation_id: str, session: SessionDep
+) -> _psim.GetSimulation:
     return await _sims.get_simulation(simulation_id, session)
+
+
+@app.get("/simulation/{simulation_id}/parameters")
+async def get_simulation_parameters(
+    simulation_id: str, session: SessionDep
+) -> _pparams.Parameters:
+    simulation = await _sims.get_simulation(simulation_id, session)
+    return simulation.parameters
 
 
 @app.get("/waiting-variations")

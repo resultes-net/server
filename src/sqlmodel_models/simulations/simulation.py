@@ -16,8 +16,14 @@ if _tp.TYPE_CHECKING:
 ParametersTypeDecorator = _td.create_pydantic_json_type_decorator(_params.Parameters)
 
 
+class SimuationBase(_psim.GetSimulationBase, _psim.WithParameters):
+    pass
+
+
 class Simulation(
-    _psim.SimulationBase, _smb.SQLModelWithIDAndState[_psim.SimulationState], table=True
+    SimuationBase,
+    _smb.SQLModelWithIDAndState[_psim.SimulationState],
+    table=True,
 ):
     id: str = _dbh.ID_FIELD
     name: str = _sqlm.Field(max_length=1024)
@@ -39,6 +45,7 @@ class Simulation(
             id=self.id,
             name=self.name,
             location=self.location,
+            type=self.type,
             created_on=self.created_on,
             state=self.state,
             state_changed_on=self.state_changed_on,
