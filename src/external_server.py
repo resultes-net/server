@@ -111,7 +111,7 @@ async def create_and_run_new_simulation(
     create_simulation: _psim.CreateSimulation,
     user: ActiveUserDep,
     session: SessionDep,
-) -> _psim.Simulation:
+) -> _psim.GetSimulation:
     simulation = _ssim.Simulation(
         name=create_simulation.name,
         location=create_simulation.location,
@@ -120,6 +120,8 @@ async def create_and_run_new_simulation(
     )
     session.add(simulation)
 
+    await session.commit()
+
     parameters = _sparams.Parameters(
         simulation_id=simulation.id, parameters=create_simulation.parameters
     )
@@ -127,7 +129,7 @@ async def create_and_run_new_simulation(
 
     await session.commit()
 
-    return simulation.to_model_simulation()
+    return simulation
 
 
 @app.get("/simulations/{simulation_id}")

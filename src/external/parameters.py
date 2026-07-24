@@ -18,4 +18,4 @@ async def get_parameters(
         _params.Parameters, simulation_id, session, id_name="simulation_id"
     )
 
-    return parameters.value
+    return parameters.parameters
