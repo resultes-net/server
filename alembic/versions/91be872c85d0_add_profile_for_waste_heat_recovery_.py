@@ -9,7 +9,6 @@ Create Date: 2026-07-22 08:55:53.016581
 import copy
 from typing import Sequence, Union
 
-import resultes_pydantic_models.simulations.parameters.common.waste_heat_recovery_source as _whrs
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 import sqlalchemy.orm.session as sess
@@ -24,13 +23,12 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-WASTE_HEAT_RECOVERY_SOURCE = _whrs.WasteHeatRecoverySource(
-    name="<disabled>",
-    hourly_values=[
-        _whrs.MassFlowRateAndTemperature(mass_flow_rate_kg_per_h=0, temperature_deg_C=0)
-        for _ in range(_whrs.N_HOURS_PER_YEAR)
+WASTE_HEAT_RECOVERY_SOURCE = {
+    "name": "<disabled>",
+    "hourly_values": [
+        {"mass_flow_rate_kg_per_h": 0, "temperature_deg_C": 0} for _ in range(365 * 24)
     ],
-).model_dump()
+}
 
 
 Base = orm.declarative_base()

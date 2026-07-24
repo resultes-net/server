@@ -11,9 +11,9 @@ import fastapi.responses as _fresp
 import fastapi.security as _fsec
 import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.runner as _pr
+import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
-import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.user as _pu
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
@@ -22,6 +22,7 @@ import uvicorn as _uc
 import config as _config
 import database_utils.helpers as _dbh
 import external.auth as _auth
+import external.parameters as _params
 import external.simulations as _sims
 import external.users as _users
 import external.variations as _vars
@@ -139,9 +140,7 @@ async def get_simulation_parameters(
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _pparams.Parameters:
-    simulation = await _sims.get_simulation(simulation_id, user, session)
-
-    return simulation.parameters
+    return await _params.get_parameters(simulation_id, user, session)
 
 
 @app.put("/simulations/{simulation_id}/state")

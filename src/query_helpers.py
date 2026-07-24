@@ -13,7 +13,15 @@ import sqlmodel_models.base as _smb
 async def get_single[M: _smb.SQLModelWithID](
     clazz: type[M], id: str, session: _sqlmas.AsyncSession
 ) -> M:
-    query = _sqlm.select(clazz).where(clazz.id == id)
+    return await get_single_any_id_name(clazz, id, session, id_name="id")
+
+
+async def get_single_any_id_name[M: _sqlm.SQLModel](
+    clazz: type[M], id: str, session: _sqlmas.AsyncSession, id_name: str
+) -> M:
+    id_attr = getattr(clazz, id_name)
+
+    query = _sqlm.select(clazz).where(id_attr == id)
 
     rows = await session.exec(query)
 
@@ -22,7 +30,7 @@ async def get_single[M: _smb.SQLModelWithID](
     if not instance:
         raise _fapi.HTTPException(
             status_code=_fapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No {clazz.__name__} with id {id} found.",
+            detail=f"No {clazz.__name__} with {id_name} {id} found.",
         )
 
     return instance

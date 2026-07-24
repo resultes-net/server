@@ -15,6 +15,7 @@ import uvicorn as _uc
 import config as _config
 import database_utils.helpers as _dbh
 import external.auth as _auth
+import internal.parameters as _params
 import internal.simulations as _sims
 import internal.variations as _vars
 
@@ -55,8 +56,7 @@ async def get_simulation(
 async def get_simulation_parameters(
     simulation_id: str, session: SessionDep
 ) -> _pparams.Parameters:
-    simulation = await _sims.get_simulation(simulation_id, session)
-    return simulation.parameters
+    return await _params.get_parameters(simulation_id, session)
 
 
 @app.get("/waiting-variations")
