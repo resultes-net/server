@@ -12,10 +12,6 @@ if _tp.TYPE_CHECKING:
     from sqlmodel_models.user import User
 
 
-class SimulationBase(_psim.GetSimulation, _psim.WithVariations):
-    pass
-
-
 class Simulation(
     _psim.GetSimulation,
     _smb.SQLModelWithIDAndState[_psim.SimulationState],

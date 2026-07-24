@@ -41,14 +41,14 @@ async def get_simulations_waiting_for_variations_creation(
         _psim.SimulationState.WAITING_FOR_VARIATIONS_CREATION, "running"
     ],
     session: SessionDep,
-) -> _cabc.Sequence[_psim.GetSimulation]:
+) -> _cabc.Sequence[_psim.Simulation]:
     return await _sims.get_simulations(state, session)
 
 
 @app.get("/simulation/{simulation_id}")
 async def get_simulation(
     simulation_id: str, session: SessionDep
-) -> _psim.GetSimulation:
+) -> _psim.Simulation:
     return await _sims.get_simulation(simulation_id, session)
 
 

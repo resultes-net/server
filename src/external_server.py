@@ -26,7 +26,8 @@ import external.parameters as _params
 import external.simulations as _sims
 import external.users as _users
 import external.variations as _vars
-import sqlmodel_models.simulations.simulation as _sim
+import sqlmodel_models.simulations.parameters as _sparams
+import sqlmodel_models.simulations.simulation as _ssim
 import sqlmodel_models.user as _mu
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
@@ -110,19 +111,23 @@ async def create_and_run_new_simulation(
     create_simulation: _psim.CreateSimulation,
     user: ActiveUserDep,
     session: SessionDep,
-) -> _psim.GetSimulation:
-    simulation = _sim.Simulation(
+) -> _psim.Simulation:
+    simulation = _ssim.Simulation(
         name=create_simulation.name,
         location=create_simulation.location,
         type=create_simulation.type,
-        parameters=create_simulation.parameters,
         user=user,
     )
-
     session.add(simulation)
+
+    parameters = _sparams.Parameters(
+        simulation_id=simulation.id, parameters=create_simulation.parameters
+    )
+    session.add(parameters)
+
     await session.commit()
 
-    return simulation
+    return simulation.to_model_simulation()
 
 
 @app.get("/simulations/{simulation_id}")
@@ -130,7 +135,7 @@ async def get_simulation(
     simulation_id: str,
     user: ActiveUserDep,
     session: SessionDep,
-) -> _psim.GetSimulation:
+) -> _psim.Simulation:
     return await _sims.get_simulation(simulation_id, user, session)
 
 
@@ -157,7 +162,7 @@ async def update_simulation_state(
 async def get_simulations(
     user: ActiveUserDep,
     session: SessionDep,
-) -> _cabc.Sequence[_psim.GetSimulation]:
+) -> _cabc.Sequence[_psim.Simulation]:
     return await _sims.get_simulations(user, session)
 
 
