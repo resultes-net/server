@@ -187,7 +187,7 @@ async def get_variation_result_headers(
     _ = await _vars.get_variation(variation_id, user, session)
 
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
-        container="resultes-results",
+        container=_config.RESULTES_RESULTS_CONTAINER,
         path=f"results/{variation_id}/{result_path}",
     )
 
@@ -253,7 +253,7 @@ Headers = _tp.TypedDict("Headers", {"Content-Length": str})
 
 async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
-        container="resultes-results", path=path
+        container=_config.RESULTES_RESULTS_CONTAINER, path=path
     )
     try:
         all_headers, chunks = await swift.download_chunks(

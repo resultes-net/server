@@ -16,3 +16,5 @@ DB_CONNECTION_STRING = (
 )
 
 ROOT_PATH = _os.environ.get("ROOT_PATH", "")
+
+RESULTES_RESULTS_CONTAINER = "resultes-results"

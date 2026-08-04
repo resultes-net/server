@@ -9,6 +9,7 @@ import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
+import config as _config
 import query_helpers as _qh
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _muser
@@ -79,12 +80,12 @@ async def update_state(
 async def _delete_results_if_they_exist(variation_id: str, swift: _sm.Swift) -> None:
     try:
         results_dir_path = _mrunner.ObjectStorageInputFilePath(
-            container="resultes-results", path=f"{variation_id}/"
+            container=_config.RESULTES_RESULTS_CONTAINER, path=f"{variation_id}/"
         )
         await swift.delete_folder(results_dir_path)
 
         zip_path = _mrunner.ObjectStorageInputZipFilePath(
-            container="resultes-results", path=f"{variation_id}.zip"
+            container=_config.RESULTES_RESULTS_CONTAINER, path=f"{variation_id}.zip"
         )
         await swift.delete(zip_path)
     except _sm.ClientException:
