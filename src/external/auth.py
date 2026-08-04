@@ -8,12 +8,12 @@ import passlib.context as _plctx
 import pydantic as _pyd
 import resultes_pydantic_models.common as _rpmc
 import resultes_pydantic_models.server as _rsrv
+import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
-import sqlmodel_models.user as _mu
 import external.users as _users
 import sqlmodel_models.latest_login as _sll
-import sqlmodel as _sqlm
+import sqlmodel_models.user as _mu
 
 _LOGGER = _log.getLogger(__name__)
 
@@ -101,20 +101,20 @@ async def create_token(
 async def _update_latest_login(session: _sqlmas.AsyncSession) -> None:
     now = _rpmc.utc_now()
 
-    latest_login = await _get_latest_login(session)
-    latest_login.on = now
+    latest_login = await get_latest_login(session)
+    if latest_login:
+        latest_login.on = now
+    else:
+        latest_login = _sll.LatestLogin(on=now)
+        session.add(latest_login)
 
     await session.commit()
 
 
-async def get_latest_login(session: _sqlmas.AsyncSession) -> _rsrv.LatestLogin:
-    return await _get_latest_login(session)
-
-
-async def _get_latest_login(session: _sqlmas.AsyncSession) -> _sll.LatestLogin:
+async def get_latest_login(session: _sqlmas.AsyncSession) -> _sll.LatestLogin | None:
     statement = _sqlm.select(_sll.LatestLogin)
     rows = await session.exec(statement)
-    latest_login = rows.one()
+    latest_login = rows.one_or_none()
     return latest_login
 
 

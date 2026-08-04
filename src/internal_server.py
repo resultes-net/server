@@ -46,9 +46,7 @@ async def get_simulations_waiting_for_variations_creation(
 
 
 @app.get("/simulation/{simulation_id}")
-async def get_simulation(
-    simulation_id: str, session: SessionDep
-) -> _psim.Simulation:
+async def get_simulation(simulation_id: str, session: SessionDep) -> _psim.Simulation:
     return await _sims.get_simulation(simulation_id, session)
 
 
@@ -110,7 +108,7 @@ async def update_variation_progress(
 
 
 @app.get("/latest-login")
-async def get_latest_login(session: SessionDep) -> _psrv.LatestLogin:
+async def get_latest_login(session: SessionDep) -> _psrv.LatestLogin | None:
     return await _auth.get_latest_login(session)
 
 
