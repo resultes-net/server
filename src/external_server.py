@@ -33,7 +33,7 @@ import sqlmodel_models.user as _mu
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 CLOUDS_YAML_FILE_PATH = _pl.Path(
-    _pl.Path(__file__).parents[1] / "config" / "clouds.yaml"
+    _pl.Path(__file__).parents[1] / "config" / "secrets"/ "swift-operator-clouds.yaml"
 )
 
 N_MAX_SWIFT_WORKERS = 16
@@ -73,7 +73,7 @@ ActiveUserDep = _tp.Annotated[_mu.User, _fapi.Depends(get_current_active_user)]
 
 
 @_ctx.asynccontextmanager
-async def lifespan(_: _fapi.FastAPI) -> _cabc.AsyncIterator[None]:
+async def lifespan(_: _fapi.FastAPI) -> _cabc.AsyncGenerator[None]:
     global swift
     with _cf.ThreadPoolExecutor(N_MAX_SWIFT_WORKERS) as executor:
         async with _sm.Swift(

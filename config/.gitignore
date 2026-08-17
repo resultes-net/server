@@ -1,0 +1,2 @@
+! Will be mounted into the container at `secrets` by Kubernetes
+secrets/
