@@ -23,14 +23,22 @@ spec:
           name: external-server
           args: ["external_server.py"]
           env:
-            - name: POSTGRES_PASSWORD
-              value: example
             - name: PORT
               value: "80"
             - name: DB_HOST_NAME
               value: server-db.server.svc.cluster.local
             - name: DB_PORT
               value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: password
             - name: ROOT_PATH
               value: /api
           volumeMounts:

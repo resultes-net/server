@@ -10,9 +10,11 @@ DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
 # You'll also need to add a firewall rule to allow connections to 172.20.61.1:6432 from, e.g.,
 # 172.20.0.0/16.
 DB_PORT = _os.environ.get("DB_PORT", "5432")
+DB_USER = _os.environ.get("DB_USER", "postgres")
+DB_PASSOWRD = _os.environ.get("DB_PASSWORD", "postgres")
 
 DB_CONNECTION_STRING = (
-    f"postgresql+psycopg://postgres:postgres@{DB_HOST_NAME}:{DB_PORT}/resultes"
+    f"postgresql+psycopg://{DB_USER}:{DB_PASSOWRD}@{DB_HOST_NAME}:{DB_PORT}/resultes"
 )
 
 ROOT_PATH = _os.environ.get("ROOT_PATH", "")

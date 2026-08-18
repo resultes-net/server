@@ -15,7 +15,11 @@ spec:
       containers:
         - env:
             - name: POSTGRES_PASSWORD
-              value: postgres
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: password
+            - name: ROOT_PATH
             - name: POSTGRES_DB
               value: resultes
           image: postgres
