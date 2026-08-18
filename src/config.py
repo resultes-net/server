@@ -12,7 +12,7 @@ DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
 # 172.20.0.0/16.
 DB_PORT = _os.environ.get("DB_PORT", "5432")
 DB_USER = _os.environ.get("DB_USER", "postgres")
-DB_PASSWORD = _urlp.quote(_os.environ.get("DB_PASSWORD", "postgres"))
+DB_PASSWORD = _urlp.quote(_os.environ.get("DB_PASSWORD", "postgres"), safe="")
 
 DB_CONNECTION_STRING = (
     f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST_NAME}:{DB_PORT}/resultes"
