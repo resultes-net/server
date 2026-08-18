@@ -14,7 +14,7 @@ DB_USER = _os.environ.get("DB_USER", "postgres")
 DB_PASSOWRD = _os.environ.get("DB_PASSWORD", "postgres")
 
 DB_CONNECTION_STRING = (
-    f"postgresql+psycopg://{DB_USER}:{DB_PASSOWRD}@{DB_HOST_NAME}:{DB_PORT}/resultes"
+    f"postgresql+psycopg://{DB_USER}:'{DB_PASSOWRD}'@{DB_HOST_NAME}:{DB_PORT}/resultes"
 )
 
 ROOT_PATH = _os.environ.get("ROOT_PATH", "")
