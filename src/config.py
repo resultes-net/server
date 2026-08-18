@@ -1,4 +1,5 @@
 import os as _os
+import urllib.parse as _urlp
 
 DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
 
@@ -11,10 +12,10 @@ DB_HOST_NAME = _os.environ.get("DB_HOST_NAME", "localhost")
 # 172.20.0.0/16.
 DB_PORT = _os.environ.get("DB_PORT", "5432")
 DB_USER = _os.environ.get("DB_USER", "postgres")
-DB_PASSOWRD = _os.environ.get("DB_PASSWORD", "postgres")
+DB_PASSWORD = _urlp.quote(_os.environ.get("DB_PASSWORD", "postgres"))
 
 DB_CONNECTION_STRING = (
-    f"postgresql+psycopg://{DB_USER}:'{DB_PASSOWRD}'@{DB_HOST_NAME}:{DB_PORT}/resultes"
+    f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST_NAME}:{DB_PORT}/resultes"
 )
 
 ROOT_PATH = _os.environ.get("ROOT_PATH", "")
