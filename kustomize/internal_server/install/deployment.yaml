@@ -31,6 +31,16 @@ spec:
               value: server-db.server.svc.cluster.local
             - name: DB_PORT
               value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: password
           ports:
             - containerPort: 8000
               protocol: TCP
@@ -38,12 +48,20 @@ spec:
         - image: ghcr.io/resultes-net/server-migrate:latest
           name: migrate
           env:
-            - name: POSTGRES_PASSWORD
-              value: example
             - name: DB_HOST_NAME
               value: server-db.server.svc.cluster.local
             - name: DB_PORT
               value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-auth-secret
+                  key: password
 
       imagePullSecrets:
         - name: read-ghcr-io-auth-secret
