@@ -41,6 +41,11 @@ spec:
                   key: password
             - name: ROOT_PATH
               value: /api
+            - name: REGISTRATION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: registration-key-secret
+                  key: registrationKey
           volumeMounts:
             - name: secrets-volume
               mountPath: /app/config/secrets

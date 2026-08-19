@@ -1,3 +1,5 @@
+import os as _os
+
 import fastapi as _fapi
 import resultes_pydantic_models.user as _pu
 import sqlmodel as _sqlm
@@ -14,7 +16,7 @@ async def get_user(user_name: str, session: _sqlmas.AsyncSession) -> _mu.User | 
     return user
 
 
-_REGISTRATION_KEY = "579e57a617ec"
+_REGISTRATION_KEY = _os.environ.get("REGISTRATION_KEY", "579e57a617ec")
 
 
 async def create_user(
