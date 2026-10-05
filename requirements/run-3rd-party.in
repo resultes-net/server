@@ -11,3 +11,5 @@ pandas-stubs
 
 sqlmodel
 psycopg[binary]
+
+pvlib

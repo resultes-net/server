@@ -8,6 +8,7 @@ import resultes_pydantic_models.server as _psrv
 import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
+import resultes_pydantic_models.weather_data as _pwd
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
@@ -18,6 +19,7 @@ import external.auth as _auth
 import internal.parameters as _params
 import internal.simulations as _sims
 import internal.variations as _vars
+import internal.weather_data as _wd
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
@@ -105,6 +107,13 @@ async def update_variation_progress(
     variation_id: str, new_progress: _pyd.NonNegativeInt, session: SessionDep
 ) -> int:
     return await _vars.update_variation_progress(variation_id, new_progress, session)
+
+
+@app.get("/weather-data/{weather_data_id}")
+async def get_weather_data(
+    weather_data_id: str, session: SessionDep
+) -> _pwd.GetWeatherData:
+    return await _wd.get_weather_data(weather_data_id, session)
 
 
 @app.get("/latest-login")

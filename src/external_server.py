@@ -15,6 +15,7 @@ import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.simulations.simulation as _psim
 import resultes_pydantic_models.simulations.variation as _pvar
 import resultes_pydantic_models.user as _pu
+import resultes_pydantic_models.weather_data as _pwd
 import sqlalchemy.ext.asyncio.engine as _sqlae
 import sqlmodel.ext.asyncio.session as _sqlmas
 import uvicorn as _uc
@@ -26,6 +27,7 @@ import external.parameters as _params
 import external.simulations as _sims
 import external.users as _users
 import external.variations as _vars
+import external.weather_data as _wd
 import sqlmodel_models.simulations.parameters as _sparams
 import sqlmodel_models.simulations.simulation as _ssim
 import sqlmodel_models.user as _mu
@@ -33,7 +35,7 @@ import sqlmodel_models.user as _mu
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(module)s - %(message)s"
 
 CLOUDS_YAML_FILE_PATH = _pl.Path(
-    _pl.Path(__file__).parents[1] / "config" / "secrets"/ "swift-operator-clouds.yaml"
+    _pl.Path(__file__).parents[1] / "config" / "secrets" / "swift-operator-clouds.yaml"
 )
 
 N_MAX_SWIFT_WORKERS = 16
@@ -106,15 +108,47 @@ async def modify_user(
     return await _users.modify_user(user_modify, user, session)
 
 
+@app.get("/weather-data")
+async def get_all_weather_data(
+    user: ActiveUserDep, session: SessionDep
+) -> _cabc.Sequence[_pwd.GetWeatherData]:
+    return await _wd.get_all_weather_data(user, session)
+
+
+@app.get("/weather-data/{weather_data_id}")
+async def get_weather_data(
+    weather_data_id: str, user: ActiveUserDep, session: SessionDep
+) -> _pwd.GetWeatherData:
+    return await _wd.get_weather_data(weather_data_id, user, session)
+
+
+@app.post("/weather-data")
+async def create_weather_data(
+    create_weather_data: _pwd.CreateWeatherData,
+    user: ActiveUserDep,
+    session: SessionDep,
+) -> _pwd.GetWeatherData:
+    return await _wd.create_weather_data(create_weather_data, user, session, swift)
+
+
 @app.post("/simulations")
 async def create_and_run_new_simulation(
     create_simulation: _psim.CreateSimulation,
     user: ActiveUserDep,
     session: SessionDep,
 ) -> _psim.GetSimulation:
+    weather_data = await _wd.get_accessible_weather_data_or_none(
+        create_simulation.weather_data_id, user, session
+    )
+    if not weather_data:
+        raise _fapi.HTTPException(
+            status_code=_fapi.status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"No weather data with ID {create_simulation.weather_data_id} found.",
+        )
+
     simulation = _ssim.Simulation(
         name=create_simulation.name,
-        location=create_simulation.location,
+        weather_data_id=weather_data.id,
         type=create_simulation.type,
         user=user,
     )

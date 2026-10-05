@@ -23,7 +23,11 @@ class Simulation(
     state_changed_on: _pcom.AwarePastDatetime = _dbh.create_utc_now_field()
 
     user_id: str = _dbh.create_id_field(foreign_key="user.id")
-    user: "User" = _dbh.create_eager_relationship("simulations")
+    user: "User" = _dbh.create_eager_relationship()
+
+    weather_data_id: str = _sqlm.Field(
+        foreign_key="weatherdata.id", ondelete="RESTRICT", max_length=16
+    )
 
     variations: list[_var.Variation] = _dbh.create_eager_relationship("simulation")
 
@@ -34,7 +38,7 @@ class Simulation(
         return _psim.Simulation(
             id=self.id,
             name=self.name,
-            location=self.location,
+            weather_data_id=self.weather_data_id,
             type=self.type,
             created_on=self.created_on,
             state=self.state,
