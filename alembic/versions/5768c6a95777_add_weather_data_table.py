@@ -3,7 +3,9 @@
 Replaces the `simulation.location` enum column with a foreign key into the new
 `weatherdata` table. The former locations are added to that table as shared
 weather data (i.e. with `user_id` NULL), keeping their enum names (lower-cased)
-as IDs, so that existing simulations can be migrated.
+as IDs, so that existing simulations can be migrated. Simulations with a dropped
+location (Berlin, Brussels, Copenhagen, Madrid) are switched to Zurich: the
+systems code never supported these and silently simulated with Zurich's weather.
 
 The weather data files themselves are *not* uploaded to the object store by
 this migration.
@@ -32,8 +34,10 @@ _LOCATIONS = [
     'SUBTROPIC', 'TEMPERATE', 'TROPICAL', 'WET',
 ]
 
-# Only the locations whose weather data the systems code has. No simulations use the dropped ones (Berlin,
-# Brussels, Copenhagen, Madrid), otherwise the foreign key below fails.
+_DROPPED_LOCATIONS = ['BERLIN', 'BRUSSELS', 'COPENHAGEN', 'MADRID']
+
+# Only the locations whose weather data the systems code has. Simulations with one of the dropped ones are
+# switched to Zurich (see `_DROPPED_LOCATIONS`).
 # (location enum name, name, file name, format)
 _SHARED_WEATHER_DATA = [
     ('ZURICH', 'Zurich', 'CH-Zuerich-Kloten-66700.tm2', 'TM2'),
@@ -71,7 +75,12 @@ def upgrade() -> None:
     )
 
     op.add_column('simulation', sa.Column('weather_data_id', sqlmodel.sql.sqltypes.AutoString(length=16), nullable=True))
-    op.execute("UPDATE simulation SET weather_data_id = lower(location::text)")
+    dropped_locations = ", ".join(f"'{location}'" for location in _DROPPED_LOCATIONS)
+    op.execute(
+        "UPDATE simulation SET weather_data_id = CASE"
+        f" WHEN location IN ({dropped_locations}) THEN 'zurich'"
+        " ELSE lower(location::text) END"
+    )
     op.alter_column('simulation', 'weather_data_id', nullable=False)
     op.create_foreign_key('simulation_weather_data_id_fkey', 'simulation', 'weatherdata', ['weather_data_id'], ['id'], ondelete='RESTRICT')
 
