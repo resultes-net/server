@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy import make_url
 
 from alembic import context
 
@@ -70,9 +71,8 @@ def run_migrations_online() -> None:
     """
     configuration = config.get_section(config.config_ini_section, {})
 
-    print(
-        f"Overwriting URL {configuration["sqlalchemy.url"]} -> {server_config.DB_CONNECTION_STRING}."
-    )
+    new_url = make_url(server_config.DB_CONNECTION_STRING).render_as_string(hide_password=True)
+    print(f"Overwriting URL {configuration["sqlalchemy.url"]} -> {new_url}.")
 
     configuration["sqlalchemy.url"] = server_config.DB_CONNECTION_STRING
 
