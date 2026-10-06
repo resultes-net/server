@@ -54,7 +54,7 @@ https://github.com/resultes-net/issues/blob/main/AGENTS.md. This file only adds 
 - `simulation.weather_data_id` references it with `ON DELETE RESTRICT`.
 - Files live in Swift as zips of `data.<tm2|csv>` and a `README.md` with the name etc.
   (`external.weather_data.write_zip_file`; runner jobs extract them into a directory `selected_weather`), so that users who download a project know which weather data it uses. Shared ones are in container `resultes-static`
-  (next to the systems code), path `weather-data/<id>.zip`; uploaded ones in container `user-data`, path
+  (next to the systems code), path `weather-data/<id>.zip`; uploaded ones in container `resultes-user-data`, path
   `<user_id>/weather-data/<id>.zip`. Paths and file names are computed only in `resultes_pydantic_models.weather_data`
   (`get_object_storage_{input,output}_file_path`, `DIR_NAME`, `get_data_file_name`, `README_FILE_NAME`), so that the scheduler and
   the systems code agree (the scheduler gets the owner from the internal `GET /weather-data/{id}`). The path uses the
