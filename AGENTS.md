@@ -28,6 +28,10 @@ https://github.com/resultes-net/issues/blob/main/AGENTS.md. This file only adds 
   only in `test_*.py` files. `norecursedirs` excludes `alembic`, `scripts`, etc., since importing e.g. `alembic/env.py` outside
   of Alembic fails.
 - Run with `venv/bin/python -m pytest` from the repo root.
+- The run image doesn't install pytest, so modules the server imports must not import `pytest`. Tests that need it
+  (`@pytest.mark.asyncio`, `pytest.raises`, fixtures) go in a separate `test_*.py` module next to the code, e.g.
+  `src/external/test_simulations.py`. An `import pytest` in `src/external/simulations.py` once crash-looped the external
+  server.
 
 ## Type checking
 - The code is written for strict Pylance/pyright. `mypy --strict` reports some errors that are already in the code, e.g.
