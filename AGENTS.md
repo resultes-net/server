@@ -48,7 +48,8 @@ https://github.com/resultes-net/issues/blob/main/AGENTS.md. This file only adds 
 
 ## Weather data
 - Table `weatherdata`: rows with `user_id` NULL are shared (the former `Location` enum values, added by migration
-  `5768c6a95777` with IDs like `zurich`, `alpine`); other rows are user uploads. Names are unique per user including the
+  `5768c6a95777`; migration `84d20633c464` gave them hard-coded IDs of the same format as generated ones, e.g. Zurich
+  `bc75a61bfd`, Alpine `c8a15e846e`); other rows are user uploads. Names are unique per user including the
   shared "user" (`UNIQUE NULLS NOT DISTINCT (user_id, name)`).
 - `simulation.weather_data_id` references it with `ON DELETE RESTRICT`.
 - Files live in Swift as zips of `data.<tm2|csv>` and a `README.md` with the name etc.
