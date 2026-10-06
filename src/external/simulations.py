@@ -1,15 +1,18 @@
 import collections.abc as _cabc
+import http as _http
 import typing as _tp
+import unittest.mock as _um
 
 import fastapi as _fapi
+import pytest as _pt
 import resultes_openstack_utils.swift_multithreaded as _sm
 import resultes_pydantic_models.common as _pcom
+import resultes_pydantic_models.results as _pres
 import resultes_pydantic_models.runner as _mrunner
 import resultes_pydantic_models.simulations.simulation as _psim
 import sqlmodel as _sqlm
 import sqlmodel.ext.asyncio.session as _sqlmas
 
-import config as _config
 import query_helpers as _qh
 import sqlmodel_models.simulations.simulation as _sim
 import sqlmodel_models.user as _muser
@@ -78,18 +81,21 @@ async def update_state(
 
 
 async def _delete_results_if_they_exist(variation_id: str, swift: _sm.Swift) -> None:
-    try:
-        results_dir_path = _mrunner.ObjectStorageInputFilePath(
-            container=_config.RESULTES_RESULTS_CONTAINER, path=f"{variation_id}/"
-        )
-        await swift.delete_folder(results_dir_path)
+    results_dir_path = _mrunner.ObjectStorageInputFilePath(
+        container=_pres.OBJECT_STORAGE_CONTAINER,
+        path=_pres.get_variation_dir_path(variation_id),
+    )
+    await swift.delete_folder(results_dir_path)
 
-        zip_path = _mrunner.ObjectStorageInputZipFilePath(
-            container=_config.RESULTES_RESULTS_CONTAINER, path=f"{variation_id}.zip"
-        )
+    zip_path = _mrunner.ObjectStorageInputZipFilePath(
+        container=_pres.OBJECT_STORAGE_CONTAINER,
+        path=_pres.get_variation_zip_path(variation_id),
+    )
+    try:
         await swift.delete(zip_path)
-    except _sm.ClientException:
-        pass
+    except _sm.ClientException as client_exception:
+        if client_exception.http_status != _http.HTTPStatus.NOT_FOUND:
+            raise
 
 
 async def get_simulations(
@@ -105,3 +111,38 @@ async def get_simulations(
     model_simulations = [s.to_model_simulation() for s in result.all()]
 
     return model_simulations
+
+
+@_pt.mark.asyncio
+async def test_delete_results_if_they_exist() -> None:
+    swift = _um.AsyncMock()
+
+    await _delete_results_if_they_exist("5e0a17c3d2", swift)
+
+    swift.delete_folder.assert_awaited_once_with(
+        _mrunner.ObjectStorageInputFilePath(
+            container="resultes-results", path="results/5e0a17c3d2/"
+        )
+    )
+    swift.delete.assert_awaited_once_with(
+        _mrunner.ObjectStorageInputZipFilePath(
+            container="resultes-results", path="results/5e0a17c3d2.zip"
+        )
+    )
+
+
+@_pt.mark.asyncio
+async def test_delete_results_if_they_exist_ignores_missing_zip() -> None:
+    swift = _um.AsyncMock()
+    swift.delete.side_effect = _sm.ClientException("Not found", http_status=404)
+
+    await _delete_results_if_they_exist("5e0a17c3d2", swift)
+
+
+@_pt.mark.asyncio
+async def test_delete_results_if_they_exist_raises_other_errors() -> None:
+    swift = _um.AsyncMock()
+    swift.delete.side_effect = _sm.ClientException("Server error", http_status=500)
+
+    with _pt.raises(_sm.ClientException):
+        await _delete_results_if_they_exist("5e0a17c3d2", swift)

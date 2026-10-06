@@ -10,6 +10,7 @@ import fastapi as _fapi
 import fastapi.responses as _fresp
 import fastapi.security as _fsec
 import resultes_openstack_utils.swift_multithreaded as _sm
+import resultes_pydantic_models.results as _pres
 import resultes_pydantic_models.runner as _pr
 import resultes_pydantic_models.simulations.parameters as _pparams
 import resultes_pydantic_models.simulations.simulation as _psim
@@ -221,8 +222,8 @@ async def get_variation_result_headers(
     _ = await _vars.get_variation(variation_id, user, session)
 
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
-        container=_config.RESULTES_RESULTS_CONTAINER,
-        path=f"results/{variation_id}/{result_path}",
+        container=_pres.OBJECT_STORAGE_CONTAINER,
+        path=_pres.get_variation_file_path(variation_id, result_path),
     )
 
     try:
@@ -249,7 +250,7 @@ async def get_variation_result(
 ) -> _fresp.StreamingResponse:
     _ = await _vars.get_variation(variation_id, user, session)
 
-    path = f"results/{variation_id}/{result_path}"
+    path = _pres.get_variation_file_path(variation_id, result_path)
 
     _, chunks = await _read_variation_result(path)
 
@@ -275,7 +276,7 @@ async def get_variation_results(
 
     media_type = "application/zip"
 
-    path = f"results/{variation_id}.zip"
+    path = _pres.get_variation_zip_path(variation_id)
 
     headers, chunks = await _read_variation_result(path)
 
@@ -287,7 +288,7 @@ Headers = _tp.TypedDict("Headers", {"Content-Length": str})
 
 async def _read_variation_result(path: str) -> tuple[Headers, _sm.AsyncChunks]:
     object_storage_input_file_path = _pr.ObjectStorageInputFilePath(
-        container=_config.RESULTES_RESULTS_CONTAINER, path=path
+        container=_pres.OBJECT_STORAGE_CONTAINER, path=path
     )
     try:
         all_headers, chunks = await swift.download_chunks(
