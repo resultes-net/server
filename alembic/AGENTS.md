@@ -19,7 +19,8 @@ the initial migration). A recipe that works in WSL with the system's PostgreSQL 
 ```sh
 D=<scratch dir>; B=/usr/lib/postgresql/16/bin
 $B/initdb -D $D/pg -U postgres --auth=trust -E UTF8
-$B/pg_ctl -D $D/pg -o "-p 56543 -k $D -c listen_addresses=localhost" -l $D/pg.log start
+# TCP only: a Unix socket in a long scratch dir path exceeds Postgres's 107-byte limit, and the server doesn't start.
+$B/pg_ctl -D $D/pg -o "-p 56543 -c unix_socket_directories='' -c listen_addresses=localhost" -l $D/pg.log start
 psql -h localhost -p 56543 -U postgres -c "create database resultes"
 # create the three enum types (see above), then:
 DB_PORT=56543 venv/bin/alembic upgrade head
