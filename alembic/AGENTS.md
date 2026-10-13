@@ -1,5 +1,9 @@
 # Guidance for agents working on migrations
 
+- Start every migration with autogenerate (`venv/bin/alembic revision --autogenerate -m "..."`, against a database at
+  head, e.g. a throwaway one, see below) and build on its output, rather than writing the migration from scratch. Add by
+  hand only what autogenerate doesn't cover (see the data migrations below). For a change that's only in the JSON
+  `parameters` column, autogenerate finds nothing: the migration is then hand-written on its empty template.
 - `env.py` imports all table models (`from sqlmodel_models import *`), so *every* Alembic command fails if a model doesn't
   import. New table models must be exported from `src/sqlmodel_models/__init__.py`, or autogenerate won't see them.
 - The connection string comes from `src/config.py` (env vars `DB_HOST_NAME`, `DB_PORT`, ...), not from `alembic.ini`.
