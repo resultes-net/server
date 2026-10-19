@@ -1,19 +1,19 @@
 # Guidance for agents working on migrations
 
-- Start every migration with autogenerate (`venv/bin/alembic revision --autogenerate -m "..."`, against a database at
-  head, e.g. a throwaway one, see below) and build on its output, rather than writing the migration from scratch. Add by
-  hand only what autogenerate doesn't cover (see the data migrations below). For a change that's only in the JSON
-  `parameters` column, autogenerate finds nothing: the migration is then hand-written on its empty template.
-- `env.py` imports all table models (`from sqlmodel_models import *`), so *every* Alembic command fails if a model doesn't
-  import. New table models must be exported from `src/sqlmodel_models/__init__.py`, or autogenerate won't see them.
-- The connection string comes from `src/config.py` (env vars `DB_HOST_NAME`, `DB_PORT`, ...), not from `alembic.ini`.
-- In production, migrations are run by the `docker/migrate` image (`alembic upgrade head`).
-- Enum columns are stored by the Python enum member's *name* (e.g. `ZURICH`), not its value. `alembic_postgresql_enum` is
-  installed and autogenerates enum type changes (`op.sync_enum_values`).
-- Autogenerate only covers the schema. When a change affects existing rows (a new NOT NULL column, replacing a column, seed
-  data), hand-write the data migration: add the column as nullable, fill it with `UPDATE`, then set it NOT NULL. Give
-  constraints explicit names so the downgrade can drop them. If a downgrade can't preserve data, fail loudly instead.
-- After writing a migration, `alembic check` must report "No new upgrade operations detected."
+1. Start every migration with autogenerate (`venv/bin/alembic revision --autogenerate -m "..."`, against a database at
+   head, e.g. a throwaway one, see below) and build on its output, rather than writing the migration from scratch. Add by
+   hand only what autogenerate doesn't cover (see the data migrations below). For a change that's only in the JSON
+   `parameters` column, autogenerate finds nothing: the migration is then hand-written on its empty template.
+1. `env.py` imports all table models (`from sqlmodel_models import *`), so *every* Alembic command fails if a model doesn't
+   import. New table models must be exported from `src/sqlmodel_models/__init__.py`, or autogenerate won't see them.
+1. The connection string comes from `src/config.py` (env vars `DB_HOST_NAME`, `DB_PORT`, ...), not from `alembic.ini`.
+1. In production, migrations are run by the `docker/migrate` image (`alembic upgrade head`).
+1. Enum columns are stored by the Python enum member's *name* (e.g. `ZURICH`), not its value. `alembic_postgresql_enum` is
+   installed and autogenerates enum type changes (`op.sync_enum_values`).
+1. Autogenerate only covers the schema. When a change affects existing rows (a new NOT NULL column, replacing a column, seed
+   data), hand-write the data migration: add the column as nullable, fill it with `UPDATE`, then set it NOT NULL. Give
+   constraints explicit names so the downgrade can drop them. If a downgrade can't preserve data, fail loudly instead.
+1. After writing a migration, `alembic check` must report "No new upgrade operations detected."
 
 ## Testing a migration on a throwaway database
 The initial migration (`4b2544451d66`) can't build an empty database: it uses the enum types `simulationstate`,
