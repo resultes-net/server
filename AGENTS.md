@@ -9,7 +9,7 @@ https://github.com/resultes-net/issues/blob/main/AGENTS.md. This file only adds 
 - `src/sqlmodel_models/`: table models. They usually inherit from the corresponding `pydantic-models` model and add
   database-only fields (foreign keys, relationships). A field that SQLModel can't map to a column (e.g. a union of an enum
   and a model) must not be on a base class that a table model inherits from.
-- `alembic/`: migrations, see `alembic/AGENTS.md`.
+- `alembic/`: migrations. Before creating or changing a migration, read `alembic/AGENTS.md`.
 - `scripts/export_openapi_json.py`: writes the OpenAPI schemas of both apps into the `openapi-schema` submodule.
 - Git submodules: `pydantic-models`, `openapi-schema`, `openstack-utils`, `src/database_utils`, `dev-utils`,
   `docker-utils`. Changes to a submodule need a commit *inside* the submodule and then one in `server` that records the new
