@@ -22,23 +22,9 @@ jobs:
           - folder: migrate
             name: server-migrate
     steps:
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: ${{ vars.READ_RESULTES_REPOS_APP_ID }}
-          private-key: ${{ secrets.READ_RESULTES_REPOS_APP_KEY }}
-          repositories: |
-            server
-            dev-utils
-            database-utils
-            docker-utils
-            openapi-schema
-            pydantic-models
-            openstack-utils
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ steps.app-token.outputs.token }}
           persist-credentials: false
           submodules: 'true'
       - name: Log in to the Container registry
