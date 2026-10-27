@@ -13,6 +13,9 @@
 1. Autogenerate only covers the schema. When a change affects existing rows (a new NOT NULL column, replacing a column, seed
    data), hand-write the data migration: add the column as nullable, fill it with `UPDATE`, then set it NOT NULL. Give
    constraints explicit names so the downgrade can drop them. If a downgrade can't preserve data, fail loudly instead.
+1. JSON that a data migration writes into the `parameters` column must look like what the server stores: it serializes
+   the parsed pydantic model, so float fields hold `0.0`, not `0`. Otherwise the rows a downgrade restores differ from
+   the original ones.
 1. After writing a migration, `alembic check` must report "No new upgrade operations detected."
 
 ## Testing a migration on a throwaway database
@@ -33,4 +36,5 @@ $B/pg_ctl -D $D/pg stop -m fast
 ```
 
 Insert realistic sample data (users, simulations) at the previous revision before testing the new one, and test both
-`upgrade` and `downgrade`.
+`upgrade` and `downgrade`. To check that a downgrade restores the rows, compare e.g. `md5(parameters::text)` per row
+before the upgrade and after the downgrade.
